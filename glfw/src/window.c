@@ -124,10 +124,11 @@ void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
+///START EDIT
+GLFWwindow* _glfwCreateWindow(int width, int height,
                                      const char* title,
                                      GLFWmonitor* monitor,
-                                     GLFWwindow* share)
+                                     GLFWwindow* share, GLFWwindow* parent)
 {
     _GLFWfbconfig fbconfig;
     _GLFWctxconfig ctxconfig;
@@ -197,7 +198,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->denom       = GLFW_DONT_CARE;
 
     // Open the actual window and create its context
-    if (!_glfwPlatformCreateWindow(window, &wndconfig, &ctxconfig, &fbconfig))
+    if (!_glfwPlatformCreateWindow(window, &wndconfig, &ctxconfig, &fbconfig, (_GLFWwindow*) parent))
     {
         glfwDestroyWindow((GLFWwindow*) window);
         return NULL;
@@ -225,6 +226,19 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     return (GLFWwindow*) window;
 }
 
+GLFWAPI GLFWwindow* glfwCreateChildWindow(GLFWwindow* parent, int width, int height, const char* title, GLFWwindow* shareContext)
+{
+	return _glfwCreateWindow(width, height, title, NULL, shareContext ? parent : NULL, parent);
+}
+GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
+	const char* title,
+	GLFWmonitor* monitor,
+	GLFWwindow* share)
+{
+	return _glfwCreateWindow(width, height, title, monitor, share, NULL);
+}
+
+//END EDIT
 void glfwDefaultWindowHints(void)
 {
     _GLFW_REQUIRE_INIT();

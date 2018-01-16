@@ -2473,6 +2473,12 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  */
 GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
 
+//START EDIT
+GLFWAPI GLFWwindow* glfwCreateChildWindow(GLFWwindow* parent, int width, int height, const char* title, GLFWwindow* shareContext);
+//END EDIT
+
+
+
 /*! @brief Destroys the specified window and its context.
  *
  *  This function destroys the specified window and its context.  On calling
@@ -3657,6 +3663,9 @@ GLFWAPI GLFWwindowcontentscalefun glfwSetWindowContentScaleCallback(GLFWwindow* 
  */
 GLFWAPI void glfwPollEvents(void);
 
+//START EDIT
+GLFWAPI void glfwUpdateInternals(void);
+//END EDIT
 /*! @brief Waits until events are queued and processes them.
  *
  *  This function puts the calling thread to sleep until at least one event is
