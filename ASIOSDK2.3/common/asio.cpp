@@ -73,7 +73,7 @@ ASIOError ASIOInit(ASIODriverInfo *info)
 #else
 
 	info->driverVersion = 0;
-	strcpy(info->name, "No ASIO Driver");
+	strcpy_s(info->name, "No ASIO Driver");
 	if(theAsioDriver)	// must be loaded!
 	{
 		if(!theAsioDriver->init(info->sysRef))
@@ -83,7 +83,7 @@ ASIOError ASIOInit(ASIODriverInfo *info)
 			return ASE_NotPresent;
 		}		
 
-		strcpy(info->errorMessage, "No ASIO Driver Error");
+		strcpy_s(info->errorMessage, "No ASIO Driver Error");
 		theAsioDriver->getDriverName(info->name);
 		info->driverVersion = theAsioDriver->getDriverVersion();
 		return ASE_OK;
@@ -202,7 +202,7 @@ ASIOError ASIOGetChannelInfo(ASIOChannelInfo *info)
 	{
 		info->channelGroup = -1;
 		info->type = ASIOSTInt16MSB;
-		strcpy(info->name, "None");
+		strcpy_s(info->name, "None");
 		return ASE_NotPresent;
 	}
 	return theAsioDriver->getChannelInfo(info);
