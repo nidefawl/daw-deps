@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.3)
 project(DAW-dependencies)
 include(ExternalProject)
 
+
 set(GLFW_BUILD_PATH ${CMAKE_BINARY_DIR}/tmp/glfw)
 set(GLFW_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/glfw)
 set(GLFW_ROOT ${CMAKE_SOURCE_DIR}/glfw)
