@@ -334,7 +334,7 @@ bool new_verbose_flag = false;
  * one may change it to a user stream if needed (say, #new_verbose_flag
  * is \c true and there are a lot of (de)allocations).
  */
-FILE* new_output_fp = stderr;
+FILE* new_output_fp = stdout;
 
 /**
  * Pointer to the program name.  Its initial value is the macro
@@ -688,6 +688,9 @@ static void free_pointer(void* usr_ptr, void* addr, bool is_array)
             (new_ptr_list_t*)((char*)usr_ptr - ALIGNED_LIST_ITEM_SIZE);
     if (ptr->magic != DEBUG_NEW_MAGIC)
     {
+//    	if (!
+//        check_mem_corruption())
+    		return;
         {
             fast_mutex_autolock lock(new_output_lock);
             fprintf(new_output_fp, "delete%s: invalid pointer %p (",
