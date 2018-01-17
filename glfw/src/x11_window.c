@@ -575,7 +575,7 @@ static void updateCursorImage(_GLFWwindow* window)
 //
 static GLFWbool createNativeWindow(_GLFWwindow* window,
                                    const _GLFWwndconfig* wndconfig,
-                                   Visual* visual, int depth)
+                                   Visual* visual, int depth, _GLFWwindow* parent)
 {
     // Create a colormap based on the visual used by the current context
     window->x11.colormap = XCreateColormap(_glfw.x11.display,
@@ -598,9 +598,9 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                         EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
 
         _glfwGrabErrorHandlerX11();
-
+        Window x11parent = parent ? parent->x11.handle : _glfw.x11.root;
         window->x11.handle = XCreateWindow(_glfw.x11.display,
-                                           _glfw.x11.root,
+        									x11parent,
                                            0, 0,
                                            wndconfig->width, wndconfig->height,
                                            0,      // Border width
@@ -1951,7 +1951,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         depth = DefaultDepth(_glfw.x11.display, _glfw.x11.screen);
     }
 
-    if (!createNativeWindow(window, wndconfig, visual, depth))
+    if (!createNativeWindow(window, wndconfig, visual, depth, parent))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)
