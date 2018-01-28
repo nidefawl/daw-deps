@@ -302,6 +302,7 @@ struct _GLFWwndconfig
     GLFWbool      floating;
     GLFWbool      maximized;
     GLFWbool      centerCursor;
+    GLFWbool      utilityWindow;
     struct {
         GLFWbool  retina;
         char      frameName[256];
@@ -407,6 +408,7 @@ struct _GLFWwindow
     GLFWbool            decorated;
     GLFWbool            autoIconify;
     GLFWbool            floating;
+    GLFWbool            utilityWindow;
     GLFWbool            shouldClose;
     void*               userPointer;
     GLFWvidmode         videoMode;

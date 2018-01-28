@@ -815,6 +815,7 @@ extern "C" {
  */
 #define GLFW_TRANSPARENT_FRAMEBUFFER 0x0002000A
 #define GLFW_HOVERED                0x0002000B
+#define GLFW_UTILITY_WINDOW               0x000200FF
 
 /*! @brief Framebuffer bit depth hint.
  *

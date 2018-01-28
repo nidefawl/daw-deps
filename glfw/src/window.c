@@ -188,6 +188,7 @@ GLFWwindow* _glfwCreateWindow(int width, int height,
     window->decorated   = wndconfig.decorated;
     window->autoIconify = wndconfig.autoIconify;
     window->floating    = wndconfig.floating;
+    window->utilityWindow = wndconfig.utilityWindow;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
 
     window->minwidth    = GLFW_DONT_CARE;
@@ -258,6 +259,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.window.focused      = GLFW_TRUE;
     _glfw.hints.window.autoIconify  = GLFW_TRUE;
     _glfw.hints.window.centerCursor = GLFW_TRUE;
+    _glfw.hints.window.utilityWindow  = GLFW_FALSE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
@@ -345,6 +347,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_FLOATING:
             _glfw.hints.window.floating = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_UTILITY_WINDOW:
+            _glfw.hints.window.utilityWindow = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_MAXIMIZED:
             _glfw.hints.window.maximized = value ? GLFW_TRUE : GLFW_FALSE;
@@ -809,6 +814,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->decorated;
         case GLFW_FLOATING:
             return window->floating;
+        case GLFW_UTILITY_WINDOW:
+            return window->utilityWindow;
         case GLFW_AUTO_ICONIFY:
             return window->autoIconify;
         case GLFW_CLIENT_API:
@@ -876,6 +883,10 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
         window->floating = value;
         if (!window->monitor)
             _glfwPlatformSetWindowFloating(window, value);
+    }
+    else if (attrib == GLFW_UTILITY_WINDOW)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Cannot change GLFW_UTILITY_WINDOW post create");
     }
     else
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);

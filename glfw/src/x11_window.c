@@ -680,7 +680,21 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                         (unsigned char*) &pid, 1);
     }
 
-    if (_glfw.x11.NET_WM_WINDOW_TYPE && _glfw.x11.NET_WM_WINDOW_TYPE_NORMAL)
+    if (_glfw.x11.NET_WM_WINDOW_TYPE && _glfw.x11.NET_WM_WINDOW_TYPE_UTILITY && wndconfig->utilityWindow)
+        {
+            Atom type = _glfw.x11.NET_WM_WINDOW_TYPE_UTILITY;
+            XChangeProperty(_glfw.x11.display,  window->x11.handle,
+                            _glfw.x11.NET_WM_WINDOW_TYPE, XA_ATOM, 32,
+                            PropModeReplace, (unsigned char*) &type, 1);
+	}
+	else if (_glfw.x11.NET_WM_WINDOW_TYPE && _glfw.x11.NET_WM_WINDOW_TYPE_MENU && wndconfig->utilityWindow)
+	{
+		Atom type = _glfw.x11.NET_WM_WINDOW_TYPE_MENU;
+		XChangeProperty(_glfw.x11.display,  window->x11.handle,
+						_glfw.x11.NET_WM_WINDOW_TYPE, XA_ATOM, 32,
+						PropModeReplace, (unsigned char*) &type, 1);
+	}
+	else if (_glfw.x11.NET_WM_WINDOW_TYPE && _glfw.x11.NET_WM_WINDOW_TYPE_NORMAL)
     {
         Atom type = _glfw.x11.NET_WM_WINDOW_TYPE_NORMAL;
         XChangeProperty(_glfw.x11.display,  window->x11.handle,
