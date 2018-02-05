@@ -1702,9 +1702,8 @@ void _glfwPlatformPollEvents(void)
 	// NOTE: Under heavy load we can get stuck inside the message loop below
 	//       By only processing 100 messages at a time we make sure
 	//       that the caller will get a chance to do work once in a while
-	int maxMessages = 100; 
 
-    while (--maxMessages && PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
+    while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
     {
         if (msg.message == WM_QUIT)
         {
