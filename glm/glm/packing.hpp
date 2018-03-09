@@ -18,6 +18,7 @@
 
 namespace glm
 {
+#ifdef GLM_INCLUDE_ALL_DEFS
 	/// @addtogroup core_func_packing
 	/// @{
 
@@ -163,6 +164,7 @@ namespace glm
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/unpackHalf2x16.xml">GLSL unpackHalf2x16 man page</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.4 Floating-Point Pack and Unpack Functions</a>
 	GLM_FUNC_DECL vec2 unpackHalf2x16(uint v);
+#endif
 
 	/// @}
 }//namespace glm

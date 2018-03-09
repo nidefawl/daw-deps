@@ -44,6 +44,7 @@ namespace glm
 		return &(v.x);
 	}
 
+#ifdef GLM_INCLUDE_ALL_DEFS
 	template<typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER T const* value_ptr(mat<2, 2, T, Q> const& m)
 	{
@@ -67,6 +68,7 @@ namespace glm
 	{
 		return &(m[0].x);
 	}
+#endif
 
 	template<typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER T const* value_ptr(mat<4, 4, T, Q> const& m)
@@ -80,6 +82,7 @@ namespace glm
 		return &(m[0].x);
 	}
 
+#ifdef GLM_INCLUDE_ALL_DEFS
 	template<typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER T const* value_ptr(mat<2, 3, T, Q> const& m)
 	{
@@ -381,6 +384,7 @@ namespace glm
 		memcpy(value_ptr(Result), ptr, sizeof(tquat<T, defaultp>));
 		return Result;
 	}
+#endif
 
 	/// @}
 }//namespace glm

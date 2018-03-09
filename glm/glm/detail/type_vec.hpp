@@ -132,6 +132,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<2, float, lowp>		lowp_vec2;
 
+#ifdef GLM_INCLUDE_ALL_DEFS
 	/// 2 components vector of high double-qualifier floating-point numbers.
 	/// There is no guarantee on the actual qualifier.
 	///
@@ -152,6 +153,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<2, double, lowp>		lowp_dvec2;
+#endif
 
 	/// 2 components vector of high qualifier signed integer numbers.
 	/// There is no guarantee on the actual qualifier.
@@ -174,6 +176,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<2, int, lowp>		lowp_ivec2;
 
+#ifdef GLM_INCLUDE_ALL_DEFS
 	/// 2 components vector of high qualifier unsigned integer numbers.
 	/// There is no guarantee on the actual qualifier.
 	///
@@ -215,6 +218,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<2, bool, lowp>		lowp_bvec2;
+#endif
 
 	/// @}
 
@@ -235,6 +239,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<3, float, mediump>	mediump_vec3;
 
+#ifdef GLM_INCLUDE_ALL_DEFS
 	/// 3 components vector of low single-qualifier floating-point numbers.
 	/// There is no guarantee on the actual qualifier.
 	///
@@ -262,6 +267,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<3, double, lowp>		lowp_dvec3;
+#endif
 
 	/// 3 components vector of high qualifier signed integer numbers.
 	/// There is no guarantee on the actual qualifier.
@@ -283,6 +289,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<3, int, lowp>		lowp_ivec3;
+#ifdef GLM_INCLUDE_ALL_DEFS
 
 	/// 3 components vector of high qualifier unsigned integer numbers.
 	/// There is no guarantee on the actual qualifier.
@@ -322,6 +329,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<3, bool, lowp>		lowp_bvec3;
+#endif
 
 	/// @}
 
@@ -346,6 +354,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<4, float, lowp>		lowp_vec4;
 
+#ifdef GLM_INCLUDE_ALL_DEFS
 	/// 4 components vector of high double-qualifier floating-point numbers.
 	///
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
@@ -363,6 +372,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<4, double, lowp>		lowp_dvec4;
+#endif
 
 	/// 4 components vector of high qualifier signed integer numbers.
 	///
@@ -382,6 +392,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<4, int, lowp>		lowp_ivec4;
 
+#ifdef GLM_INCLUDE_ALL_DEFS
 	/// 4 components vector of high qualifier unsigned integer numbers.
 	///
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
@@ -417,7 +428,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
 	typedef vec<4, bool, lowp>		lowp_bvec4;
-
+#endif
 	/// @}
 
 	/// @addtogroup core_types
@@ -452,6 +463,7 @@ namespace detail
 
 	// -- Default double definition --
 
+#ifdef GLM_INCLUDE_ALL_DEFS
 #if(defined(GLM_PRECISION_LOWP_DOUBLE))
 	typedef lowp_dvec2			dvec2;
 	typedef lowp_dvec3			dvec3;
@@ -476,6 +488,8 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
 	typedef highp_dvec4			dvec4;
 #endif//GLM_PRECISION
+#endif
+
 
 	// -- Signed integer definition --
 
@@ -506,6 +520,7 @@ namespace detail
 
 	// -- Unsigned integer definition --
 
+#ifdef GLM_INCLUDE_ALL_DEFS
 #if(defined(GLM_PRECISION_LOWP_UINT))
 	typedef lowp_uvec2			uvec2;
 	typedef lowp_uvec3			uvec3;
@@ -557,6 +572,7 @@ namespace detail
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.5 Vectors</a>
 	typedef highp_bvec4			bvec4;
 #endif//GLM_PRECISION
+#endif
 
 	/// @}
 }//namespace glm

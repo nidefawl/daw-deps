@@ -7,6 +7,7 @@
 
 namespace glm
 {
+#ifdef GLM_INCLUDE_ALL_DEFS
 	GLM_FUNC_QUALIFIER uint packUnorm2x16(vec2 const& v)
 	{
 		union
@@ -182,6 +183,7 @@ namespace glm
 			detail::toFloat32(u.out[0]),
 			detail::toFloat32(u.out[1]));
 	}
+#endif
 }//namespace glm
 
 #if GLM_ARCH != GLM_ARCH_PURE && GLM_HAS_UNRESTRICTED_UNIONS
