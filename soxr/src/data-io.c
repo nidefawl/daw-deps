@@ -47,23 +47,7 @@ void _soxr_deinterleave_f(float * * dest, /* Round/clipping not needed here */
 #undef DEINTERLEAVE_TO
 #define DEINTERLEAVE_TO float
   switch (data_type & 3) {
-    case SOXR_FLOAT32: {
-		//DEINTERLEAVE_FROM(float, 1); break;
-		  unsigned i;
-		  size_t j;
-		  float const * src = *src0;
-			for (i = 0; i < ch; ++i)
-		  printf("dest[%d] = %012X\n\n",i,(long)dest[i]);
-		  if (ch > 1) for (j = 0; j < n; ++j)
-			for (i = 0; i < ch; ++i) {
-				float* ptr = dest[i];
-				ptr[j] = (float)*src++;
-			}
-		  else if (1) memcpy(dest[0], src, n * sizeof(float)), src = &src[n];
-		  else for (j = 0; j < n; dest[0][j++] = (float)*src++);
-		  *src0 = src;
-		break;
-	}
+    case SOXR_FLOAT32: DEINTERLEAVE_FROM(float, 1); break;
     case SOXR_FLOAT64: DEINTERLEAVE_FROM(double, 0); break;
     case SOXR_INT32:   DEINTERLEAVE_FROM(int32_t, 0); break;
     case SOXR_INT16:   DEINTERLEAVE_FROM(int16_t, 0); break;
