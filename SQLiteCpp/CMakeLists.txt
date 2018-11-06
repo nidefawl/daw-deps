@@ -167,13 +167,16 @@ set(SQLITECPP_SCRIPT
 source_group(scripts FILES ${SQLITECPP_SCRIPT})
 
 # All includes are relative to the "include" directory 
-include_directories("${PROJECT_SOURCE_DIR}/include")
+include_directories("${PROJECT_SOURCE_DIR}/include" 
+    "${PROJECT_SOURCE_DIR}/sqlite3/")
+# include_directories()
+
 
 # add sources of the wrapper as a "SQLiteCpp" static library
-add_library(SQLiteCpp ${SQLITECPP_SRC} ${SQLITECPP_INC} ${SQLITECPP_DOC} ${SQLITECPP_SCRIPT})
+add_library(SQLiteCpp ${PROJECT_SOURCE_DIR}/sqlite3/sqlite3.c ${SQLITECPP_SRC} ${SQLITECPP_INC} ${SQLITECPP_DOC} ${SQLITECPP_SCRIPT})
 # make the sqlite3 library part of the interface of the SQLiteCpp wrapper itself (the client app does not need to link to sqlite3)
 # PR https://github.com/SRombauts/SQLiteCpp/pull/111 "linked SQLiteCpp to sqlite3" commented out since it breacks install step from PR #118
-#target_link_libraries(SQLiteCpp PUBLIC sqlite3)
+#target_link_libraries(SQLiteCpp PRIVATE sqlite3)
 
 if (UNIX AND (CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"))
     set_target_properties(SQLiteCpp PROPERTIES COMPILE_FLAGS "-fPIC")
@@ -187,8 +190,10 @@ install(TARGETS SQLiteCpp
     COMPONENT libraries)
 target_include_directories(SQLiteCpp PUBLIC 
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include/>)
+  $<INSTALL_INTERFACE:include/>
+  $<INSTALL_INTERFACE:sqlite3/include/>)
 install(DIRECTORY include/ DESTINATION include COMPONENT headers FILES_MATCHING REGEX ".*\\.(hpp|h)$")
+install(DIRECTORY sqlite3/include/ DESTINATION sqlite3/include COMPONENT headers FILES_MATCHING REGEX ".*\\.(hpp|h)$")
 install(EXPORT ${PROJECT_NAME}Config DESTINATION lib/cmake/${PROJECT_NAME})
 
 ## Build provided copy of SQLite3 C library ##
@@ -202,9 +207,9 @@ install(EXPORT ${PROJECT_NAME}Config DESTINATION lib/cmake/${PROJECT_NAME})
 option(SQLITECPP_INTERNAL_SQLITE "Add the internal SQLite3 source to the project." ON)
 if (SQLITECPP_INTERNAL_SQLITE)
     # build the SQLite3 C library (for ease of use/compatibility) versus Linux sqlite3-dev package
-    add_subdirectory(sqlite3)
-    include_directories("${PROJECT_SOURCE_DIR}/sqlite3")
-    target_include_directories(sqlite3 PUBLIC "${PROJECT_SOURCE_DIR}/sqlite3")
+    #add_subdirectory(sqlite3)
+    #include_directories("${PROJECT_SOURCE_DIR}/sqlite3")
+    #message(STATUS "Add the internal SQLite3 source to the project")
 endif (SQLITECPP_INTERNAL_SQLITE)
 
 
