@@ -9,6 +9,9 @@
 #define INPROC_SERVER		_T("InprocServer32")
 #define ASIO_PATH			_T("software\\asio")
 #define COM_CLSID_T			_T("clsid")
+#if defined(UNICODE)
+#error "asiolist.cpp isnt unicode ready. fix me"
+#endif
 
 // ******************************************************************
 // Local Functions 
@@ -60,6 +63,7 @@ static LPASIODRVSTRUCT newDrvStruct (HKEY hkey,TCHAR *keyname,int drvID,LPASIODR
 {
 	HKEY	hksub;
 	TCHAR	databuf[512];
+	WORD	wData[100];
 	TCHAR	dllpath[MAXPATHLEN];
 	CLSID	clsid;
 	DWORD	datatype,datasize;
@@ -77,17 +81,18 @@ static LPASIODRVSTRUCT newDrvStruct (HKEY hkey,TCHAR *keyname,int drvID,LPASIODR
 					if (lpdrv) {
 						memset(lpdrv,0,sizeof(ASIODRVSTRUCT));
 						lpdrv->drvID = drvID;
-						if ((cr = CLSIDFromString((LPOLESTR)databuf,(LPCLSID)&clsid)) == S_OK) {
+
+						MultiByteToWideChar(CP_ACP,0,(LPCSTR)databuf,-1,(LPWSTR)wData,100);
+						if ((cr = CLSIDFromString((LPOLESTR)wData,(LPCLSID)&clsid)) == S_OK) {
 							memcpy(&lpdrv->clsid,&clsid,sizeof(CLSID));
 						}
+
 						datatype = REG_SZ; datasize = 256;
-						cr = RegQueryValueEx(hksub, ASIODRV_DESC,0,&datatype,(LPBYTE)databuf,&datasize);
-						if (cr != ERROR_SUCCESS) {
-							WideCharToMultiByte(CP_ACP, 0, (LPWSTR)databuf, -1, lpdrv->drvname, 100, NULL, NULL);
+						cr = RegQueryValueEx(hksub,ASIODRV_DESC,0,&datatype,(LPBYTE)databuf,&datasize);
+						if (cr == ERROR_SUCCESS) {
+							strcpy(lpdrv->drvname,databuf);
 						}
-						else {
-							WideCharToMultiByte(CP_ACP, 0, (LPWSTR)keyname, -1, lpdrv->drvname, 100, NULL, NULL);
-						}
+						else strcpy(lpdrv->drvname,keyname);
 					}
 				}
 			}
