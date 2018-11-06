@@ -5118,6 +5118,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* window);
  *  @ingroup context
  */
 GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
+GLFWAPI int glfwIsContextPresent(void);
 
 /*! @brief Swaps the front and back buffers of the specified window.
  *

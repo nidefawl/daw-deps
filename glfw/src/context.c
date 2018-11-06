@@ -614,6 +614,12 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return _glfwPlatformGetTls(&_glfw.contextSlot);
 }
+GLFWAPI int glfwIsContextPresent(void)
+{
+    if (!_glfw.initialized)
+        return 0;
+    return _glfwPlatformGetTls(&_glfw.contextSlot) != NULL;
+}
 
 GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
 {
