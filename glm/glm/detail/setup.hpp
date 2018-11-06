@@ -813,4 +813,5 @@ namespace glm
 #elif GLM_SETUP_INCLUDED == GLM_VERSION
 
 #endif//GLM_SETUP_INCLUDED
+#undef GLM_HAS_ONLY_XYZW
 #define GLM_HAS_ONLY_XYZW 1
