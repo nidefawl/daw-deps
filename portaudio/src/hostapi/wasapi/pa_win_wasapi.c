@@ -432,6 +432,9 @@ typedef struct PaWasapiDeviceInfo
 
 	// Formfactor
 	EndpointFormFactor formFactor;
+
+	// Loopback indicator
+	int loopBack;
 }
 PaWasapiDeviceInfo;
 
@@ -1588,6 +1591,8 @@ static PaError CreateDeviceList(PaWasapiHostApiRepresentation *paWasapi, PaHostA
     PaDeviceInfo *deviceInfoArray;
     HRESULT hr = S_OK;
 	UINT i;
+	UINT renderCount;
+	UINT devIndex;
 #ifndef PA_WINRT
     IMMDeviceCollection* pEndPoints = NULL;
 	IMMDeviceEnumerator *pEnumerator = NULL;
@@ -1658,6 +1663,18 @@ static PaError CreateDeviceList(PaWasapiHostApiRepresentation *paWasapi, PaHostA
 			}
         }
     }
+    hr = IMMDeviceEnumerator_EnumAudioEndpoints(pEnumerator, eRender, DEVICE_STATE_ACTIVE, &pEndPoints);
+    // We need to set the result to a value otherwise we will return paNoError
+    // [IF_FAILED_JUMP(hResult, error);]
+    IF_FAILED_INTERNAL_ERROR_JUMP(hr, result, error);
+
+    hr = IMMDeviceCollection_GetCount(pEndPoints, &renderCount);
+    // We need to set the result to a value otherwise we will return paNoError
+    // [IF_FAILED_JUMP(hResult, error);]
+    IF_FAILED_INTERNAL_ERROR_JUMP(hr, result, error);
+
+    SAFE_RELEASE(pEndPoints);
+    pEndPoints = NULL;
 
     hr = IMMDeviceEnumerator_EnumAudioEndpoints(pEnumerator, eAll, DEVICE_STATE_ACTIVE, &pEndPoints);
 	// We need to set the result to a value otherwise we will return paNoError
@@ -1683,6 +1700,7 @@ static PaError CreateDeviceList(PaWasapiHostApiRepresentation *paWasapi, PaHostA
 	}
 #endif
 
+	paWasapi->deviceCount += renderCount;
     paWasapi->devInfo = (PaWasapiDeviceInfo *)PaUtil_AllocateMemory(sizeof(PaWasapiDeviceInfo) * paWasapi->deviceCount);
     if (paWasapi->devInfo == NULL)
 	{
@@ -1717,7 +1735,7 @@ static PaError CreateDeviceList(PaWasapiHostApiRepresentation *paWasapi, PaHostA
         }
 		memset(deviceInfoArray, 0, sizeof(PaDeviceInfo) * deviceCount);
 
-        for (i = 0; i < paWasapi->deviceCount; ++i)
+		for (devIndex = 0, i = 0; i < paWasapi->deviceCount; ++i, ++devIndex)
 		{
             PaDeviceInfo *deviceInfo  = &deviceInfoArray[i];
             deviceInfo->structVersion = 2;
@@ -1727,7 +1745,7 @@ static PaError CreateDeviceList(PaWasapiHostApiRepresentation *paWasapi, PaHostA
 			PA_DEBUG(("WASAPI: ---------------\n"));
 
 		#ifndef PA_WINRT
-            hr = IMMDeviceCollection_Item(pEndPoints, i, &paWasapi->devInfo[i].device);
+            hr = IMMDeviceCollection_Item(pEndPoints, devIndex, &paWasapi->devInfo[i].device);
 			// We need to set the result to a value otherwise we will return paNoError
 			// [IF_FAILED_JUMP(hResult, error);]
 			IF_FAILED_INTERNAL_ERROR_JUMP(hr, result, error);
@@ -1949,6 +1967,42 @@ static PaError CreateDeviceList(PaWasapiHostApiRepresentation *paWasapi, PaHostA
 
             hostApi->deviceInfos[i] = deviceInfo;
             ++hostApi->info.deviceCount;
+        	if (paWasapi->devInfo[i].flow == eRender)
+        	{
+        		char *deviceName;
+        		UINT deviceNameLen;
+
+        		memcpy(&deviceInfoArray[i + 1], deviceInfo, sizeof(*deviceInfo));
+        		memcpy(&paWasapi->devInfo[i + 1], &paWasapi->devInfo[i], sizeof(*paWasapi->devInfo));
+
+        		i++;
+        		paWasapi->devInfo[i].loopBack = 1;
+
+        		deviceInfo = &deviceInfoArray[i];
+
+        		deviceInfo->maxInputChannels         = deviceInfo->maxOutputChannels;
+        		deviceInfo->defaultHighInputLatency  = deviceInfo->defaultHighOutputLatency;
+        		deviceInfo->defaultLowInputLatency   = deviceInfo->defaultLowOutputLatency;
+        		deviceInfo->maxOutputChannels        = 0;
+        		deviceInfo->defaultHighOutputLatency = 0;
+        		deviceInfo->defaultLowOutputLatency  = 0;
+                PA_DEBUG(("WASAPI:%d| def.SR[%d] max.CH[%d] latency{hi[%f] lo[%f]}\n", i, (UINT32)deviceInfo->defaultSampleRate,
+                        deviceInfo->maxInputChannels, (float)deviceInfo->defaultHighInputLatency, (float)deviceInfo->defaultLowInputLatency));
+
+        		IMMDevice_AddRef(paWasapi->devInfo[i].device);
+
+        		deviceName = (char *)PaUtil_GroupAllocateMemory(paWasapi->allocations, MAX_STR_LEN + 1);
+        		if (deviceName == NULL) {
+        		  result = paInsufficientMemory;
+        		  goto error;
+        		}
+
+        		_snprintf(deviceName, MAX_STR_LEN-1, "%s (loopback)", deviceInfo->name);
+        		deviceInfo->name = deviceName;
+
+        		hostApi->deviceInfos[i] = deviceInfo;
+        		++hostApi->info.deviceCount;
+        	}
         }
 
 	#if defined(PA_WASAPI_MAX_CONST_DEVICE_COUNT) && (PA_WASAPI_MAX_CONST_DEVICE_COUNT > 0)
@@ -2870,7 +2924,7 @@ static HRESULT CreateAudioClient(PaWasapiStream *pStream, PaWasapiSubStream *pSu
 		}*/
 
 		// select mixer
-		pSub->monoMixer = GetMonoToStereoMixer(&pSub->wavex, (pInfo->flow == eRender ? MIX_DIR__1TO2 : MIX_DIR__2TO1_L));
+		pSub->monoMixer = GetMonoToStereoMixer(&pSub->wavex, (output ? MIX_DIR__1TO2 : MIX_DIR__2TO1_L));
 		if (pSub->monoMixer == NULL)
 		{
 			(*pa_error) = paInvalidChannelCount;
@@ -3207,7 +3261,7 @@ static HRESULT CreateAudioClient(PaWasapiStream *pStream, PaWasapiSubStream *pSu
 			}*/
 
 			// Select mixer
-			pSub->monoMixer = GetMonoToStereoMixer(&pSub->wavex, (pInfo->flow == eRender ? MIX_DIR__1TO2 : MIX_DIR__2TO1_L));
+			pSub->monoMixer = GetMonoToStereoMixer(&pSub->wavex, (output ? MIX_DIR__1TO2 : MIX_DIR__2TO1_L));
 			if (pSub->monoMixer == NULL)
 			{
 				(*pa_error) = paInvalidChannelCount;
@@ -3528,6 +3582,8 @@ static PaError OpenStream( struct PaUtilHostApiRepresentation *hostApi,
 		if (fullDuplex)
 			stream->in.streamFlags = 0; // polling interface is implemented for full-duplex mode also
 
+		if (info->flow == eRender)
+			stream->in.streamFlags |= AUDCLNT_STREAMFLAGS_LOOPBACK;
 		// Fill parameters for Audio Client creation
 		stream->in.params.device_info       = info;
 		stream->in.params.stream_params     = (*inputParameters);
