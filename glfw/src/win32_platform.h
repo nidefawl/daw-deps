@@ -245,7 +245,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(
 #include "egl_context.h"
 #include "osmesa_context.h"
 
-#define _GLFW_WNDCLASSNAME L"GLFW30"
+#define _GLFW_WNDCLASSNAME L"GLFWCUSTOM"
 
 #define _glfw_dlopen(name) LoadLibraryA(name)
 #define _glfw_dlclose(handle) FreeLibrary((HMODULE) handle)

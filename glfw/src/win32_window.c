@@ -40,6 +40,9 @@
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
 {
+	if (window->isChild) {
+		return WS_CHILD;
+	}
     DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
     if (window->monitor)
@@ -1058,7 +1061,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 //START EDIT
 static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
-							  const _GLFWfbconfig* fbconfig, _GLFWwindow* parent)
+							  const _GLFWfbconfig* fbconfig, void* parentWindowHandle)
 {
     int xpos, ypos, fullWidth, fullHeight;
 	WCHAR* wideTitle;
@@ -1096,8 +1099,8 @@ static int createNativeWindow(_GLFWwindow* window,
 		return GLFW_FALSE;
 	}
 
-	if (parent) {
-		parentHwnd = parent->win32.handle;
+	if (parentWindowHandle) {
+		parentHwnd = (HWND) parentWindowHandle;
 	}
     window->win32.handle = CreateWindowExW(exStyle,
                                            _GLFW_WNDCLASSNAME,
@@ -1214,9 +1217,9 @@ GLFWbool _glfwIsCompositionEnabledWin32(void)
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWctxconfig* ctxconfig,
-							  const _GLFWfbconfig* fbconfig, _GLFWwindow* parent)
+							  const _GLFWfbconfig* fbconfig, void* parentWindowHandle)
 {
-	if (!createNativeWindow(window, wndconfig, fbconfig, parent))
+	if (!createNativeWindow(window, wndconfig, fbconfig, parentWindowHandle))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)
@@ -1568,7 +1571,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
-    return window->win32.handle == GetActiveWindow();
+    return window->isChild || window->win32.handle == GetActiveWindow();
 }
 
 int _glfwPlatformWindowIconified(_GLFWwindow* window)

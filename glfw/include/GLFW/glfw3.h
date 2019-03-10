@@ -2475,7 +2475,7 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
 GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
 
 //START EDIT
-GLFWAPI GLFWwindow* glfwCreateChildWindow(GLFWwindow* parent, int width, int height, const char* title, GLFWwindow* shareContext);
+GLFWAPI GLFWwindow* glfwCreateChildWindow(void* parent, int width, int height, const char* title, GLFWwindow* shareContext);
 //END EDIT
 
 

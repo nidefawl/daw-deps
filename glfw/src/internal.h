@@ -409,7 +409,8 @@ struct _GLFWwindow
     GLFWbool            autoIconify;
     GLFWbool            floating;
     GLFWbool            utilityWindow;
-    GLFWbool            shouldClose;
+	GLFWbool            shouldClose;
+	GLFWbool            isChild;
     void*               userPointer;
     GLFWvidmode         videoMode;
     _GLFWmonitor*       monitor;
@@ -668,7 +669,7 @@ uint64_t _glfwPlatformGetTimerFrequency(void);
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWctxconfig* ctxconfig,
-							  const _GLFWfbconfig* fbconfig, _GLFWwindow* parent);
+							  const _GLFWfbconfig* fbconfig, void* parentWindowHandle);
 //END EDIT
 void _glfwPlatformDestroyWindow(_GLFWwindow* window);
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);

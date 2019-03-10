@@ -128,7 +128,7 @@ void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
 GLFWwindow* _glfwCreateWindow(int width, int height,
                                      const char* title,
                                      GLFWmonitor* monitor,
-                                     GLFWwindow* share, GLFWwindow* parent)
+                                     GLFWwindow* share, void* parentWindowHandle)
 {
     _GLFWfbconfig fbconfig;
     _GLFWctxconfig ctxconfig;
@@ -190,6 +190,7 @@ GLFWwindow* _glfwCreateWindow(int width, int height,
     window->floating    = wndconfig.floating;
     window->utilityWindow = wndconfig.utilityWindow;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
+	window->isChild		= parentWindowHandle != NULL;
 
     window->minwidth    = GLFW_DONT_CARE;
     window->minheight   = GLFW_DONT_CARE;
@@ -199,7 +200,7 @@ GLFWwindow* _glfwCreateWindow(int width, int height,
     window->denom       = GLFW_DONT_CARE;
 
     // Open the actual window and create its context
-    if (!_glfwPlatformCreateWindow(window, &wndconfig, &ctxconfig, &fbconfig, (_GLFWwindow*) parent))
+    if (!_glfwPlatformCreateWindow(window, &wndconfig, &ctxconfig, &fbconfig, parentWindowHandle))
     {
         glfwDestroyWindow((GLFWwindow*) window);
         return NULL;
@@ -227,9 +228,9 @@ GLFWwindow* _glfwCreateWindow(int width, int height,
     return (GLFWwindow*) window;
 }
 
-GLFWAPI GLFWwindow* glfwCreateChildWindow(GLFWwindow* parent, int width, int height, const char* title, GLFWwindow* shareContext)
+GLFWAPI GLFWwindow* glfwCreateChildWindow(void* parentWindowHandle, int width, int height, const char* title, GLFWwindow* shareContext)
 {
-	return _glfwCreateWindow(width, height, title, NULL, shareContext ? parent : NULL, parent);
+	return _glfwCreateWindow(width, height, title, NULL, shareContext, parentWindowHandle);
 }
 GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
 	const char* title,
