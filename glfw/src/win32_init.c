@@ -325,7 +325,7 @@ static HWND createHelperWindow(void)
 {
     MSG msg;
     HWND window = CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
-                                  _GLFW_WNDCLASSNAME,
+		                          _glfw.win32.windowClassName,
                                   L"GLFW message window",
                                   WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                                   0, 0, 1, 1,
@@ -527,9 +527,10 @@ int _glfwPlatformInit(void)
         SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
     else if (IsWindowsVistaOrGreater())
         SetProcessDPIAware();
-
-    if (!_glfwRegisterWindowClassWin32())
-        return GLFW_FALSE;
+	_glfwRegisterWindowClassWin32();
+	//EDIT: ignore error, class might be already registered, which is fine
+    /*if (!_glfwRegisterWindowClassWin32())
+        return GLFW_FALSE;*/
 
     _glfw.win32.helperWindowHandle = createHelperWindow();
     if (!_glfw.win32.helperWindowHandle)

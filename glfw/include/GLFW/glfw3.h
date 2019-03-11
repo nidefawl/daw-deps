@@ -1628,7 +1628,7 @@ typedef struct GLFWgamepadstate
  *
  *  @ingroup init
  */
-GLFWAPI int glfwInit(void);
+GLFWAPI int glfwInit(const char* wndClazzName);
 
 /*! @brief Terminates the GLFW library.
  *

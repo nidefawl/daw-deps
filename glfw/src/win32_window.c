@@ -40,12 +40,11 @@
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
 {
-	if (window->isChild) {
-		return WS_CHILD;
-	}
     DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
-    if (window->monitor)
+	if (window->isChild) {
+		style = WS_CHILD;
+	} else if (window->monitor)
         style |= WS_POPUP;
     else
     {
@@ -1103,7 +1102,7 @@ static int createNativeWindow(_GLFWwindow* window,
 		parentHwnd = (HWND) parentWindowHandle;
 	}
     window->win32.handle = CreateWindowExW(exStyle,
-                                           _GLFW_WNDCLASSNAME,
+										   _glfw.win32.windowClassName,
                                            wideTitle,
                                            style,
                                            xpos, ypos,
@@ -1164,7 +1163,7 @@ GLFWbool _glfwRegisterWindowClassWin32(void)
     wc.lpfnWndProc   = (WNDPROC) windowProc;
     wc.hInstance     = GetModuleHandleW(NULL);
     wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
-    wc.lpszClassName = _GLFW_WNDCLASSNAME;
+    wc.lpszClassName = _glfw.win32.windowClassName;
 
     // Load user-provided icon if available
     wc.hIcon = LoadImageW(GetModuleHandleW(NULL),

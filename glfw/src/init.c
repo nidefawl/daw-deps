@@ -187,13 +187,18 @@ void _glfwInputError(int code, const char* format, ...)
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWAPI int glfwInit(void)
+GLFWAPI int glfwInit(const char* wndClazzName)
 {
     if (_glfw.initialized)
         return GLFW_TRUE;
 
     memset(&_glfw, 0, sizeof(_glfw));
     _glfw.hints.init = _glfwInitHints;
+	_glfw.win32.windowClassName = _GLFW_WNDCLASSNAME;
+	if (wndClazzName) {
+		WCHAR* wideTitle = _glfwCreateWideStringFromUTF8Win32(wndClazzName);
+		_glfw.win32.windowClassName = wideTitle;
+	}
 
     if (!_glfwPlatformInit())
     {
