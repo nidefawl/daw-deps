@@ -96,17 +96,11 @@ extern "C" {
  #define _WIN32
 #endif /* _WIN32 */
 
-/* It is customary to use APIENTRY for OpenGL function pointer declarations on
- * all platforms.  Additionally, the Windows OpenGL header needs APIENTRY.
- */
-#ifndef APIENTRY
  #ifdef _WIN32
-  #define APIENTRY __stdcall
+  #define GLFW_APIENTRY __stdcall
  #else
-  #define APIENTRY
+  #define GLFW_APIENTRY
  #endif
- #define GLFW_APIENTRY_DEFINED
-#endif /* APIENTRY */
 
 /* Some Windows OpenGL headers need this.
  */
@@ -199,12 +193,26 @@ extern "C" {
 
  #else /*__APPLE__*/
 
+ /* It is customary to use APIENTRY for OpenGL function pointer declarations on
+  * all platforms.  Additionally, the Windows OpenGL header needs APIENTRY.
+  */
+  #ifndef APIENTRY
+   #define APIENTRY GLFW_APIENTRY
+   #define GLFW_APIENTRY_DEFINED
+  #endif /* APIENTRY */
+
   #include <GL/gl.h>
+
   #if defined(GLFW_INCLUDE_GLEXT)
    #include <GL/glext.h>
   #endif
   #if defined(GLFW_INCLUDE_GLU)
    #include <GL/glu.h>
+  #endif
+
+  #if defined(GLFW_APIENTRY_DEFINED)
+   #undef APIENTRY
+   #undef GLFW_APIENTRY_DEFINED
   #endif
 
  #endif /*__APPLE__*/
@@ -5514,7 +5522,7 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
  * defined by some gl.h variants (OpenBSD) so define it after if needed.
  */
 #ifndef GLAPIENTRY
- #define GLAPIENTRY APIENTRY
+ #define GLAPIENTRY GLFW_APIENTRY
 #endif
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */

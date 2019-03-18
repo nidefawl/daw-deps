@@ -41,7 +41,7 @@
 // This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
 // example to allow applications to correctly declare a GL_ARB_debug_output
 // callback) but windows.h assumes no one will define APIENTRY before it does
-#undef APIENTRY
+//#undef APIENTRY
 
 // GLFW on Windows is Unicode only and does not work in MBCS mode
 #ifndef UNICODE
@@ -237,8 +237,8 @@ typedef struct VkWin32SurfaceCreateInfoKHR
     HWND                            hwnd;
 } VkWin32SurfaceCreateInfoKHR;
 
-typedef VkResult (APIENTRY *PFN_vkCreateWin32SurfaceKHR)(VkInstance,const VkWin32SurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
-typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice,uint32_t);
+typedef VkResult (GLFW_APIENTRY *PFN_vkCreateWin32SurfaceKHR)(VkInstance,const VkWin32SurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+typedef VkBool32 (GLFW_APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice,uint32_t);
 
 #include "win32_joystick.h"
 #include "wgl_context.h"

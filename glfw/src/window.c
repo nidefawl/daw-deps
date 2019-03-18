@@ -190,7 +190,8 @@ GLFWwindow* _glfwCreateWindow(int width, int height,
     window->floating    = wndconfig.floating;
     window->utilityWindow = wndconfig.utilityWindow;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
-	window->isChild		= parentWindowHandle != NULL;
+	window->isChild = parentWindowHandle != NULL;
+	window->isAlwaysFocused = GLFW_TRUE;
 
     window->minwidth    = GLFW_DONT_CARE;
     window->minheight   = GLFW_DONT_CARE;

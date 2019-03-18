@@ -108,10 +108,10 @@ typedef unsigned int GLenum;
 typedef unsigned int GLbitfield;
 typedef unsigned char GLubyte;
 
-typedef void (APIENTRY * PFNGLCLEARPROC)(GLbitfield);
-typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGPROC)(GLenum);
-typedef void (APIENTRY * PFNGLGETINTEGERVPROC)(GLenum,GLint*);
-typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
+typedef void (GLFW_APIENTRY * PFNGLCLEARPROC)(GLbitfield);
+typedef const GLubyte* (GLFW_APIENTRY * PFNGLGETSTRINGPROC)(GLenum);
+typedef void (GLFW_APIENTRY * PFNGLGETINTEGERVPROC)(GLenum,GLint*);
+typedef const GLubyte* (GLFW_APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 
 #define VK_NULL_HANDLE 0
 
@@ -168,14 +168,14 @@ typedef struct VkExtensionProperties
     uint32_t        specVersion;
 } VkExtensionProperties;
 
-typedef void (APIENTRY * PFN_vkVoidFunction)(void);
+typedef void (GLFW_APIENTRY * PFN_vkVoidFunction)(void);
 
 #if defined(_GLFW_VULKAN_STATIC)
   PFN_vkVoidFunction vkGetInstanceProcAddr(VkInstance,const char*);
   VkResult vkEnumerateInstanceExtensionProperties(const char*,uint32_t*,VkExtensionProperties*);
 #else
-  typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
-  typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
+  typedef PFN_vkVoidFunction (GLFW_APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
+  typedef VkResult (GLFW_APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
   #define vkEnumerateInstanceExtensionProperties _glfw.vk.EnumerateInstanceExtensionProperties
   #define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
 #endif
@@ -411,6 +411,7 @@ struct _GLFWwindow
     GLFWbool            utilityWindow;
 	GLFWbool            shouldClose;
 	GLFWbool            isChild;
+	GLFWbool            isAlwaysFocused;
     void*               userPointer;
     GLFWvidmode         videoMode;
     _GLFWmonitor*       monitor;
