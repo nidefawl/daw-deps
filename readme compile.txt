@@ -1,0 +1,1 @@
+cmake .. -G "MinGW Makefiles" -DCMAKE_CXX_FLAGS=--target=x86_64-pc-windows-gnu -DCMAKE_C_FLAGS=--target=x86_64-pc-windows-gnu
