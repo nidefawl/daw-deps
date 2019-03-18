@@ -38,6 +38,8 @@
 //////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
 
+// Notifies shared code that a window has lost or received input focus
+//
 void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
 {
     if (window->callbacks.focus)
@@ -64,48 +66,68 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
     }
 }
 
+// Notifies shared code that a window has moved
+// The position is specified in content area relative screen coordinates
+//
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 {
     if (window->callbacks.pos)
         window->callbacks.pos((GLFWwindow*) window, x, y);
 }
 
+// Notifies shared code that a window has been resized
+// The size is specified in screen coordinates
+//
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
 {
     if (window->callbacks.size)
         window->callbacks.size((GLFWwindow*) window, width, height);
 }
 
+// Notifies shared code that a window has been iconified or restored
+//
 void _glfwInputWindowIconify(_GLFWwindow* window, GLFWbool iconified)
 {
     if (window->callbacks.iconify)
         window->callbacks.iconify((GLFWwindow*) window, iconified);
 }
 
+// Notifies shared code that a window has been maximized or restored
+//
 void _glfwInputWindowMaximize(_GLFWwindow* window, GLFWbool maximized)
 {
     if (window->callbacks.maximize)
         window->callbacks.maximize((GLFWwindow*) window, maximized);
 }
 
+// Notifies shared code that a window framebuffer has been resized
+// The size is specified in pixels
+//
 void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height)
 {
     if (window->callbacks.fbsize)
         window->callbacks.fbsize((GLFWwindow*) window, width, height);
 }
 
+// Notifies shared code that a window content scale has changed
+// The scale is specified as the ratio between the current and default DPI
+//
 void _glfwInputWindowContentScale(_GLFWwindow* window, float xscale, float yscale)
 {
     if (window->callbacks.scale)
         window->callbacks.scale((GLFWwindow*) window, xscale, yscale);
 }
 
+// Notifies shared code that the window contents needs updating
+//
 void _glfwInputWindowDamage(_GLFWwindow* window)
 {
     if (window->callbacks.refresh)
         window->callbacks.refresh((GLFWwindow*) window);
 }
 
+// Notifies shared code that the user wishes to close a window
+//
 void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 {
     window->shouldClose = GLFW_TRUE;
@@ -114,11 +136,12 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
         window->callbacks.close((GLFWwindow*) window);
 }
 
+// Notifies shared code that a window has changed its desired monitor
+//
 void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
 {
     window->monitor = monitor;
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
@@ -188,6 +211,7 @@ GLFWwindow* _glfwCreateWindow(int width, int height,
     window->decorated   = wndconfig.decorated;
     window->autoIconify = wndconfig.autoIconify;
     window->floating    = wndconfig.floating;
+    window->focusOnShow = wndconfig.focusOnShow;
     window->utilityWindow = wndconfig.utilityWindow;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
 	window->isChild = parentWindowHandle != NULL;
@@ -216,7 +240,12 @@ GLFWwindow* _glfwCreateWindow(int width, int height,
         }
     }
 
-    if (!window->monitor)
+    if (window->monitor)
+    {
+        if (wndconfig.centerCursor)
+            _glfwCenterCursorInContentArea(window);
+    }
+    else
     {
         if (wndconfig.visible)
         {
@@ -261,6 +290,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.window.focused      = GLFW_TRUE;
     _glfw.hints.window.autoIconify  = GLFW_TRUE;
     _glfw.hints.window.centerCursor = GLFW_TRUE;
+    _glfw.hints.window.focusOnShow  = GLFW_TRUE;
     _glfw.hints.window.utilityWindow  = GLFW_FALSE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
@@ -365,8 +395,14 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_COCOA_GRAPHICS_SWITCHING:
             _glfw.hints.context.nsgl.offline = value ? GLFW_TRUE : GLFW_FALSE;
             return;
+        case GLFW_SCALE_TO_MONITOR:
+            _glfw.hints.window.scaleToMonitor = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
         case GLFW_CENTER_CURSOR:
             _glfw.hints.window.centerCursor = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_FOCUS_ON_SHOW:
+            _glfw.hints.window.focusOnShow = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;
@@ -753,7 +789,9 @@ GLFWAPI void glfwShowWindow(GLFWwindow* handle)
         return;
 
     _glfwPlatformShowWindow(window);
-    _glfwPlatformFocusWindow(window);
+
+    if (window->focusOnShow)
+        _glfwPlatformFocusWindow(window);
 }
 
 GLFWAPI void glfwRequestWindowAttention(GLFWwindow* handle)
@@ -808,6 +846,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return _glfwPlatformWindowMaximized(window);
         case GLFW_HOVERED:
             return _glfwPlatformWindowHovered(window);
+        case GLFW_FOCUS_ON_SHOW:
+            return window->focusOnShow;
         case GLFW_TRANSPARENT_FRAMEBUFFER:
             return _glfwPlatformFramebufferTransparent(window);
         case GLFW_RESIZABLE:
@@ -890,6 +930,8 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Cannot change GLFW_UTILITY_WINDOW post create");
     }
+    else if (attrib == GLFW_FOCUS_ON_SHOW)
+        window->focusOnShow = value;
     else
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);
 }
@@ -1068,10 +1110,6 @@ GLFWAPI void glfwPollEvents(void)
 GLFWAPI void glfwWaitEvents(void)
 {
     _GLFW_REQUIRE_INIT();
-
-    if (!_glfw.windowListHead)
-        return;
-
     _glfwPlatformWaitEvents();
 }
 
@@ -1094,10 +1132,5 @@ GLFWAPI void glfwWaitEventsTimeout(double timeout)
 GLFWAPI void glfwPostEmptyEvent(void)
 {
     _GLFW_REQUIRE_INIT();
-
-    if (!_glfw.windowListHead)
-        return;
-
     _glfwPlatformPostEmptyEvent();
 }
-

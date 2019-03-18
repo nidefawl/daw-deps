@@ -27,12 +27,13 @@
 #include <stdint.h>
 #include <dlfcn.h>
 
+#include <Carbon/Carbon.h>
+#include <CoreVideo/CVBase.h>
+#include <CoreVideo/CVDisplayLink.h>
+
 #if defined(__OBJC__)
-#import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 #else
-#include <Carbon/Carbon.h>
-#include <ApplicationServices/ApplicationServices.h>
 typedef void* id;
 #endif
 
@@ -106,12 +107,14 @@ typedef struct _GLFWlibraryNS
 {
     CGEventSourceRef    eventSource;
     id                  delegate;
-    id                  autoreleasePool;
+    GLFWbool            finishedLaunching;
     GLFWbool            cursorHidden;
     TISInputSourceRef   inputSource;
     IOHIDManagerRef     hidManager;
     id                  unicodeData;
-    id                  listener;
+    id                  helper;
+    id                  keyUpMonitor;
+    id                  nibObjects;
 
     char                keyName[64];
     short int           keycodes[256];
@@ -164,6 +167,8 @@ typedef struct _GLFWtimerNS
 void _glfwInitTimerNS(void);
 
 void _glfwPollMonitorsNS(void);
-GLFWbool _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor);
+
+float _glfwTransformYNS(float y);
 
