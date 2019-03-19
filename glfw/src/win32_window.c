@@ -1283,7 +1283,7 @@ static int createNativeWindow(_GLFWwindow* window,
     // Adjust window size to account for DPI scaling of the window frame and
     // optionally DPI scaling of the content area
     // This cannot be done until we know what monitor it was placed on
-    if (!window->monitor)
+    if (!window->monitor && !window->isChild)
     {
         RECT rect = { 0, 0, wndconfig->width, wndconfig->height };
 
