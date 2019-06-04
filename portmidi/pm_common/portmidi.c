@@ -50,15 +50,6 @@ char pm_hosterror_text[PM_HOST_ERROR_MSG_LEN];
 
 #define STRING_MAX 80
 
-static void prompt_and_exit(void)
-{
-    char line[STRING_MAX];
-    printf("type ENTER...");
-    fgets(line, STRING_MAX, stdin);
-    /* this will clean up open ports: */
-    exit(-1);
-}
-
 
 static PmError pm_errmsg(PmError err)
 {
@@ -69,10 +60,8 @@ static PmError pm_errmsg(PmError err)
         printf("PortMidi found host error...\n  %s\n", pm_hosterror_text);
         pm_hosterror = FALSE;
         pm_hosterror_text[0] = 0; /* clear the message */
-        prompt_and_exit();
     } else if (err < 0) {
         printf("PortMidi call failed...\n  %s\n", Pm_GetErrorText(err));
-        prompt_and_exit();
     }
     return err;
 }
