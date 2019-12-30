@@ -93,7 +93,12 @@ def buildLibrary(buildType, linkMode, name, extraArgs, optionalCmakeArgs=""):
 
     mkdir_p(pathBuild)
     print("%s"%cmd)
-    subprocess.call(cmd, stderr=subprocess.STDOUT, shell=True, env=my_env)
+    ret = subprocess.call(cmd, stderr=subprocess.STDOUT, shell=True, env=my_env)
+    if 0 != ret:
+        raise Exception("subprocess call returned "+ret)
+    ret = subprocess.call(cmd, stderr=subprocess.STDOUT, shell=True, env=my_env)
+    if 0 != ret:
+        raise Exception("subprocess call returned "+ret)
     mkdir_p(pathInstall)
     print("%s"%cmdInstall)
     subprocess.call(cmdInstall, stderr=subprocess.STDOUT, shell=True, env=my_env)
