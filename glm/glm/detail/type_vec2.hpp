@@ -392,6 +392,11 @@ namespace glm
 
 	template<qualifier Q>
 	GLM_FUNC_DECL GLM_CONSTEXPR vec<2, bool, Q> operator||(vec<2, bool, Q> const& v1, vec<2, bool, Q> const& v2);
+
+	template<typename T, qualifier Q>
+	GLM_FUNC_DECL static GLM_CONSTEXPR T lengthSquared(vec<2, T, Q> const& t) {
+		return (T) (t.x*t.x + t.y*t.y);
+	}
 }//namespace glm
 
 #ifndef GLM_EXTERNAL_TEMPLATE

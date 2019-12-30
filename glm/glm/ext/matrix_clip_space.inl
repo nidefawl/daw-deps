@@ -531,4 +531,15 @@ namespace glm
 	{
 		return tweakedInfinitePerspective(fovy, aspect, zNear, epsilon<T>());
 	}
+	template<typename T>
+	GLM_FUNC_QUALIFIER mat<4, 4, T, defaultp> myortho(T left, T right, T bottom, T top)
+	{
+		mat<4, 4, T, defaultp> Result(static_cast<T>(1));
+		Result[0][0] = static_cast<T>(2) / (right - left);
+		Result[1][1] = static_cast<T>(2) / (top - bottom);
+		Result[2][2] = - static_cast<T>(1);
+		Result[3][0] = - (right + left) / (right - left);
+		Result[3][1] = - (top + bottom) / (top - bottom);
+		return Result;
+	}
 }//namespace glm
