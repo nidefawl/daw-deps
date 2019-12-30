@@ -914,7 +914,7 @@ float _glfwTransformYNS(float y)
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWctxconfig* ctxconfig,
-                              const _GLFWfbconfig* fbconfig)
+                              const _GLFWfbconfig* fbconfig, void* parentWindowHandle)
 {
     @autoreleasepool {
 
