@@ -95,13 +95,12 @@ def buildLibrary(buildType, linkMode, name, extraArgs, optionalCmakeArgs=""):
     print("%s"%cmd)
     ret = subprocess.call(cmd, stderr=subprocess.STDOUT, shell=True, env=my_env)
     if 0 != ret:
-        raise Exception("subprocess call returned "+ret)
-    ret = subprocess.call(cmd, stderr=subprocess.STDOUT, shell=True, env=my_env)
-    if 0 != ret:
-        raise Exception("subprocess call returned "+ret)
+        raise Exception("subprocess call returned %d"%ret)
     mkdir_p(pathInstall)
     print("%s"%cmdInstall)
-    subprocess.call(cmdInstall, stderr=subprocess.STDOUT, shell=True, env=my_env)
+    ret = subprocess.call(cmdInstall, stderr=subprocess.STDOUT, shell=True, env=my_env)
+    if 0 != ret:
+        raise Exception("subprocess call returned %d"%ret)
     
 
 
@@ -109,7 +108,7 @@ def buildLibrary(buildType, linkMode, name, extraArgs, optionalCmakeArgs=""):
 for buildType in range(2):
     linkMode=LINK_MODE_STATIC
     buildLibrary(buildType, linkMode, "glfw" , extraArgs=extraArgs, optionalCmakeArgs=" -DGLFW_BUILD_DOCS:BOOL=OFF -DGLFW_BUILD_TESTS:BOOL=OFF -DGLFW_BUILD_EXAMPLES:BOOL=OFF")
-    buildLibrary(buildType, linkMode, "SQLiteCPP" , extraArgs=extraArgs, optionalCmakeArgs=" -DSQLITECPP_RUN_CPPCHECK:BOOL=OFF -DSQLITECPP_RUN_CPPLINT:BOOL=OFF -DSQLITECPP_INTERNAL_SQLITE:BOOL=ON ")
+    buildLibrary(buildType, linkMode, "SQLiteCpp" , extraArgs=extraArgs, optionalCmakeArgs=" -DSQLITECPP_RUN_CPPCHECK:BOOL=OFF -DSQLITECPP_RUN_CPPLINT:BOOL=OFF -DSQLITECPP_INTERNAL_SQLITE:BOOL=ON ")
     buildLibrary(buildType, linkMode, "soxr" , extraArgs=extraArgs, optionalCmakeArgs=" -DBUILD_EXAMPLES:BOOL=OFF -DBUILD_TESTS:BOOL=ON -DWITH_OPENMP:BOOL=OFF -DBUILD_SHARED_LIBS:BOOL=ON")
     optionalCmakeArgsPortAudio=" -DPA_DLL_LINK_WITH_STATIC_RUNTIME:BOOL=OFF -DPA_ENABLE_DEBUG_OUTPUT:BOOL=Off"
     if (linkMode == LINK_MODE_STATIC):

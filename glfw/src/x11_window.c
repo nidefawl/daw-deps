@@ -591,7 +591,7 @@ static void enableCursor(_GLFWwindow* window)
 //
 static GLFWbool createNativeWindow(_GLFWwindow* window,
                                    const _GLFWwndconfig* wndconfig,
-                                   Visual* visual, int depth, _GLFWwindow* parent)
+                                   Visual* visual, int depth, void* parentWindowHandle)
 {
     int width = wndconfig->width;
     int height = wndconfig->height;
@@ -623,6 +623,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                         EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
 
         _glfwGrabErrorHandlerX11();
+        _GLFWwindow* parent = (_GLFWwindow*) parentWindowHandle;
         Window x11parent = parent ? parent->x11.handle : _glfw.x11.root;
         window->x11.handle = XCreateWindow(_glfw.x11.display,
         									x11parent,
@@ -1963,7 +1964,7 @@ void _glfwPushSelectionToManagerX11(void)
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWctxconfig* ctxconfig,
-                              const _GLFWfbconfig* fbconfig, _GLFWwindow* parent)
+                              const _GLFWfbconfig* fbconfig, void* parentWindowHandle)
 {
     Visual* visual;
     int depth;
@@ -1998,7 +1999,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         depth = DefaultDepth(_glfw.x11.display, _glfw.x11.screen);
     }
 
-    if (!createNativeWindow(window, wndconfig, visual, depth, parent))
+    if (!createNativeWindow(window, wndconfig, visual, depth, parentWindowHandle))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)
