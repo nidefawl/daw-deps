@@ -226,11 +226,13 @@ GLFWAPI int glfwInit(const char* wndClazzName)
 
     memset(&_glfw, 0, sizeof(_glfw));
     _glfw.hints.init = _glfwInitHints;
+#ifdef _WIN32
 	_glfw.win32.windowClassName = _GLFW_WNDCLASSNAME;
 	if (wndClazzName) {
 		WCHAR* wideTitle = _glfwCreateWideStringFromUTF8Win32(wndClazzName);
 		_glfw.win32.windowClassName = wideTitle;
 	}
+#endif
 
     if (!_glfwPlatformInit())
     {
