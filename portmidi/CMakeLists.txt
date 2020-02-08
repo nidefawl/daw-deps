@@ -12,12 +12,12 @@ if(UNIX)
   set(CMAKE_BUILD_TYPE Release CACHE STRING 
       "Semicolon-separate list of supported configuration types")
   # set default directories but don't override cached values...
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CACHEFILE_DIR}/${CMAKE_BUILD_TYPE}
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CACHEFILE_DIR}
       CACHE STRING "libraries go here")
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CACHEFILE_DIR}/${CMAKE_BUILD_TYPE}
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CACHEFILE_DIR}
       CACHE STRING "libraries go here")
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY 
-      ${CMAKE_CACHEFILE_DIR}/${CMAKE_BUILD_TYPE}
+      ${CMAKE_CACHEFILE_DIR}
       CACHE STRING "executables go here")
 
 else(UNIX)
@@ -57,13 +57,13 @@ if(UNIX)
   # then every other path is left alone
   if(CMAKE_LIBRARY_OUTPUT_DIRECTORY MATCHES ${BAD_DIR})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY 
-        ${CMAKE_CACHEFILE_DIR}/${CMAKE_BUILD_TYPE}
+        ${CMAKE_CACHEFILE_DIR}
         CACHE STRING "executables go here" FORCE)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY 
-        ${CMAKE_CACHEFILE_DIR}/${CMAKE_BUILD_TYPE}
+        ${CMAKE_CACHEFILE_DIR}
         CACHE STRING "libraries go here" FORCE)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY 
-        ${CMAKE_CACHEFILE_DIR}/${CMAKE_BUILD_TYPE}
+        ${CMAKE_CACHEFILE_DIR}
         CACHE STRING "libraries go here" FORCE)
   endif(CMAKE_LIBRARY_OUTPUT_DIRECTORY MATCHES ${BAD_DIR})
 endif(UNIX)
