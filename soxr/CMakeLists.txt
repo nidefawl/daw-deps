@@ -217,6 +217,8 @@ if (BUILD_SHARED_LIBS)
     add_definitions (-DSOXR_DLL)
   endif ()
 endif ()
+set(CMAKE_DEBUG_POSTFIX d)
+
 
 if (CMAKE_BUILD_TYPE STREQUAL "None") # As used by some distros.
   add_definitions (-DNDEBUG)
