@@ -143,6 +143,7 @@ typedef struct VkXcbSurfaceCreateInfoKHR
     xcb_connection_t*           connection;
     xcb_window_t                window;
 } VkXcbSurfaceCreateInfoKHR;
+#define APIENTRY
 
 typedef VkResult (APIENTRY *PFN_vkCreateXlibSurfaceKHR)(VkInstance,const VkXlibSurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)(VkPhysicalDevice,uint32_t,Display*,VisualID);
