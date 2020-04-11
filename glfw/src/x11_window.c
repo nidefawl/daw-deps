@@ -623,8 +623,10 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                         EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
 
         _glfwGrabErrorHandlerX11();
-        _GLFWwindow* parent = (_GLFWwindow*) parentWindowHandle;
-        Window x11parent = parent ? parent->x11.handle : _glfw.x11.root;
+        Window x11parent = _glfw.x11.root;
+        if (parentWindowHandle) {
+            x11parent = (Window) parentWindowHandle;
+        }
         window->x11.handle = XCreateWindow(_glfw.x11.display,
         									x11parent,
                                            0, 0,
