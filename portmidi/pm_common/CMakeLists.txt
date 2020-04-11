@@ -1,6 +1,5 @@
 # pm_common
 
-OPTION(PM_BUILD_JNI "Build java bindings" OFF)
 # set the build directory for libportmidi.a to be in portmidi, not in 
 #    portmidi/pm_common
 if(APPLE OR WIN32)
@@ -63,23 +62,9 @@ if(UNIX)
                              ${COREMIDI_LIB} ${CORESERVICES_LIB}
         CACHE INTERNAL "")
 
-    if (PM_BUILD_JNI) 
-      set(JAVAVM_LIB "${FRAMEWORK_PATH}/JavaVM.framework")
-      set(JAVA_INCLUDE_PATHS ${JAVAVM_LIB}/Headers)
-    endif()
     message(STATUS "SYSROOT: " ${CMAKE_OSX_SYSROOT})
   else(APPLE)
     # LINUX settings...
-    if (PM_BUILD_JNI) 
-      include(FindJNI)
-      message(STATUS "JAVA_JVM_LIB_PATH is " ${JAVA_JVM_LIB_PATH})
-      message(STATUS "JAVA_INCLUDE_PATH is " ${JAVA_INCLUDE_PATH})
-      message(STATUS "JAVA_INCLUDE_PATH2 is " ${JAVA_INCLUDE_PATH2})
-      message(STATUS "JAVA_JVM_LIBRARY is " ${JAVA_JVM_LIBRARY})
-      set(JAVA_INCLUDE_PATHS ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
-      # libjvm.so is found relative to JAVA_INCLUDE_PATH:
-      set(JAVAVM_LIB ${JAVA_JVM_LIBRARY}/libjvm.so)
-    endif()
 
     set(LINUXSRC pmlinuxalsa pmlinux finddefault)
     prepend_path(LIBSRC ../pm_linux/ ${LINUXSRC})
@@ -93,25 +78,12 @@ else(UNIX)
     # /MD is multithread DLL, /MT is multithread. Change to static:
     include(../pm_win/static.cmake)
     
-if (PM_BUILD_JNI) 
-    include(FindJNI)
-
-    set(JAVA_INCLUDE_PATHS ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
-    # message(STATUS "JAVA_INCLUDE_PATHS: " ${JAVA_INCLUDE_PATHS})
-endif()
-
     set(WINSRC pmwin pmwinmm)
     prepend_path(LIBSRC ../pm_win/ ${WINSRC})
     list(APPEND LIBSRC ../porttime/ptwinmm)
     set(PM_NEEDED_LIBS winmm.lib)
   endif(WIN32)
 endif(UNIX)
-if (PM_BUILD_JNI) 
-set(JNI_EXTRA_LIBS ${PM_NEEDED_LIBS} ${JAVA_JVM_LIBRARY})
-else()
-set(JNI_EXTRA_LIBS ${PM_NEEDED_LIBS})
-endif()
-
 
 # this completes the list of library sources by adding shared code
 list(APPEND LIBSRC pmutil portmidi)
@@ -121,13 +93,15 @@ add_library(portmidi-static ${LIBSRC})
 set_target_properties(portmidi-static PROPERTIES OUTPUT_NAME "portmidi_s")
 target_link_libraries(portmidi-static ${PM_NEEDED_LIBS})
 
-# define the jni library
-include_directories(${JAVA_INCLUDE_PATHS})
-if (PM_BUILD_JNI) 
-  set(JNISRC ${LIBSRC} ../pm_java/pmjni/pmjni.c)
-  add_library(pmjni SHARED ${JNISRC})
-  target_link_libraries(pmjni ${JNI_EXTRA_LIBS})
-  set_target_properties(pmjni PROPERTIES EXECUTABLE_EXTENSION "jnilib")
+# install the libraries (Linux and Mac OS X command line)
+INSTALL(TARGETS portmidi-static
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib)
+INSTALL(FILES ../pm_common/portmidi.h ../porttime/porttime.h
+	DESTINATION include)
+INSTALL(FILES ../README.txt DESTINATION share/doc/portmidi)
+INSTALL(FILES ../license.txt DESTINATION share/doc/portmidi)
 
 
-endif()
+
