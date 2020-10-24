@@ -15,19 +15,20 @@ def mkdir_p(path):
 
 script_path = os.path.dirname(os.path.abspath( __file__ ))
 print("script path %s"%script_path)
-if len(sys.argv) < 3:
-        raise ValueError("python daw-deps/build.py <build-directory> <install-path>")
+sysargs = sys.argv[:]
+
+if len(sysargs) < 3:
+	sysargs = [__file__, "./build", "./install"]
+	#raise ValueError("python daw-deps/build.py <build-directory> <install-path>")
 extraArgs = ""
-if len(sys.argv) > 3:
-    extraArgs=" "+(" ".join(sys.argv[3:]))+" "
+if len(sysargs) > 3:
+    extraArgs=" "+(" ".join(sysargs[3:]))+" "
 
 
 
 PATH_DEPS_REPO=script_path
-PATH_DEPS_BUILD_DIR=sys.argv[1]
-PATH_DEPS_INSTALL_DIR=sys.argv[2]
-PATH_DEPS_BUILD_DIR = os.path.abspath(sys.argv[1])
-PATH_DEPS_INSTALL_DIR = os.path.abspath(sys.argv[2])
+PATH_DEPS_BUILD_DIR = os.path.abspath(sysargs[1])
+PATH_DEPS_INSTALL_DIR = os.path.abspath(sysargs[2])
 print("PATH_DEPS_BUILD_DIR %s"%PATH_DEPS_BUILD_DIR)
 print("PATH_DEPS_INSTALL_DIR %s"%PATH_DEPS_INSTALL_DIR)
 
