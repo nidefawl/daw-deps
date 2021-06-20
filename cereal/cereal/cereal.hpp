@@ -887,9 +887,13 @@ namespace cereal
           return lookupResult->second;
         else // need to load
         {
-          std::uint32_t version;
+            std::uint32_t version = 0;
 
-          process( make_nvp<ArchiveType>("cereal_class_version", version) );
+          try {
+              process(make_nvp<ArchiveType>("cereal_class_version", version));
+          } catch (cereal::Exception& e) {
+              version = 0;
+          }
           itsVersionedTypes.emplace_hint( lookupResult, hash, version );
 
           return version;
