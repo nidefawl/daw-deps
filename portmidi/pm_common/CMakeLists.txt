@@ -1,4 +1,5 @@
 # pm_common
+# Modified by Michael Hept 2019-2021
 
 # set the build directory for libportmidi.a to be in portmidi, not in 
 #    portmidi/pm_common
@@ -8,15 +9,6 @@ if(APPLE OR WIN32)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
-  # the first time CMake configures, save off CMake's built-in flags
-  if(NOT DEFAULT_DEBUG_FLAGS)
-    set(DEFAULT_DEBUG_FLAGS ${CMAKE_C_FLAGS_DEBUG} CACHE 
-        STRING "CMake's default debug flags" FORCE)
-    set(DEFAULT_RELEASE_FLAGS ${CMAKE_C_FLAGS_RELEASE} CACHE 
-        STRING "CMake's default release flags" FORCE)
-  else(NOT DEFAULT_DEBUG_FLAGS)
-    message(STATUS "DEFAULT_DEBUG_FLAGS not nil: " ${DEFAULT_DEBUG_FLAGS})
-  endif(NOT DEFAULT_DEBUG_FLAGS)
 else(APPLE OR WIN32)
   set(LINUX_FLAGS "-DPMALSA")
 endif(APPLE OR WIN32)
@@ -76,7 +68,7 @@ else(UNIX)
   if(WIN32)
     # /MDd is multithread debug DLL, /MTd is multithread debug
     # /MD is multithread DLL, /MT is multithread. Change to static:
-    include(../pm_win/static.cmake)
+    #include(../pm_win/static.cmake)
     
     set(WINSRC pmwin pmwinmm)
     prepend_path(LIBSRC ../pm_win/ ${WINSRC})
