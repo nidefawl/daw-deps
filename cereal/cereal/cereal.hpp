@@ -891,7 +891,7 @@ namespace cereal
 
           try {
               process(make_nvp<ArchiveType>("cereal_class_version", version));
-          } catch (cereal::Exception& e) {
+          } catch (cereal::Exception&) {
               version = 0;
           }
           itsVersionedTypes.emplace_hint( lookupResult, hash, version );
