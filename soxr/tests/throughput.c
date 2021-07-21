@@ -5,20 +5,20 @@
 #include "rint.h"
 #include "../examples/examples-common.h"
 
-#define k 1000
+#define MSECS_TO_SECS 1000
 
 #if defined _WIN32
   #define WIN32_LEAN_AND_MEAN
   #include <windows.h>
   #define timerStart(msecs) LARGE_INTEGER start, stop, tmp; \
       QueryPerformanceCounter(&start), QueryPerformanceFrequency(&tmp), \
-      stop.QuadPart = (msecs * tmp.QuadPart + k/2) / k
+      stop.QuadPart = (msecs * tmp.QuadPart + MSECS_TO_SECS/2) / MSECS_TO_SECS
   #define timerRunning() (QueryPerformanceCounter(&tmp), \
       (tmp.QuadPart-start.QuadPart < stop.QuadPart))
 #else
   #include <sys/time.h>
   #if defined timeradd
-    #define K k
+    #define K MSECS_TO_SECS
     #define tv_frac tv_usec
     #define timespec timeval
     #define get_time(x) gettimeofday(x, NULL)
@@ -26,7 +26,7 @@
     #include <time.h>
     #include <unistd.h>
     #if defined _POSIX_TIMERS && _POSIX_TIMERS > 0
-      #define K (k*k)
+      #define K (MSECS_TO_SECS*MSECS_TO_SECS)
       #define tv_frac tv_nsec
       #if defined _POSIX_MONOTONIC_CLOCK
         #define get_time(x) clock_gettime(CLOCK_MONOTONIC, x)
@@ -136,6 +136,6 @@ int main(int n, char const * arg[])
   fprintf(stderr, "%-26s %s; %lu clips; I/O: %s (%-5s) %.2f Ms/s\n",
       arg0, soxr_strerror(error), (long unsigned)clips,
       ferror(stdin) || ferror(stdout)? strerror(errno) : "no error", engine,
-      1e-6 * k / DURATION_MSECS * chans * (double)omax);
+      1e-6 * MSECS_TO_SECS / DURATION_MSECS * chans * (double)omax);
   return !!error;
 }
