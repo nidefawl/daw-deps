@@ -23,7 +23,8 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #if USE_NATIVE_OSMESA
@@ -89,7 +90,7 @@ int main(void)
 
     glfwInitHint(GLFW_COCOA_MENUBAR, GLFW_FALSE);
 
-    if (!glfwInit())
+    if (!glfwInit("TEST"))
         exit(EXIT_FAILURE);
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
@@ -104,7 +105,7 @@ int main(void)
     }
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
 
     // NOTE: OpenGL error checks have been omitted for brevity
 
@@ -147,6 +148,7 @@ int main(void)
     glUseProgram(program);
     glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+    glFinish();
 
 #if USE_NATIVE_OSMESA
     glfwGetOSMesaColorBuffer(window, &width, &height, NULL, (void**) &buffer);

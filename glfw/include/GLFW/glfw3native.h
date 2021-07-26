@@ -1,9 +1,9 @@
 /*************************************************************************
- * GLFW 3.3 - www.glfw.org
+ * GLFW 3.4 - www.glfw.org
  * A library for OpenGL, window and input
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
- * Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+ * Copyright (c) 2006-2018 Camilla Löwy <elmindreda@glfw.org>
  *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -83,12 +83,12 @@ extern "C" {
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32) || defined(GLFW_EXPOSE_NATIVE_WGL)
  // This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
- // example to allow applications to correctly declare a GL_ARB_debug_output
- // callback) but windows.h assumes no one will define APIENTRY before it does
- //#if defined(GLFW_APIENTRY_DEFINED)
-  //#undef APIENTRY
-  //#undef GLFW_APIENTRY_DEFINED
- //#endif
+ // example to allow applications to correctly declare a GL_KHR_debug callback)
+ // but windows.h assumes no one will define APIENTRY before it does
+ #if defined(GLFW_APIENTRY_DEFINED)
+  #undef APIENTRY
+  #undef GLFW_APIENTRY_DEFINED
+ #endif
  #include <windows.h>
 #elif defined(GLFW_EXPOSE_NATIVE_COCOA) || defined(GLFW_EXPOSE_NATIVE_NSGL)
  #if defined(__OBJC__)
@@ -161,6 +161,14 @@ GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* monitor);
  *  @return The `HWND` of the specified window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @remark The `HDC` associated with the window can be queried with the
+ *  [GetDC](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdc)
+ *  function.
+ *  @code
+ *  HDC dc = GetDC(glfwGetWin32Window(window));
+ *  @endcode
+ *  This DC is private and does not need to be released.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -176,6 +184,14 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* window);
  *
  *  @return The `HGLRC` of the specified window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
+ *
+ *  @remark The `HDC` associated with the window can be queried with the
+ *  [GetDC](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdc)
+ *  function.
+ *  @code
+ *  HDC dc = GetDC(glfwGetWin32Window(window));
+ *  @endcode
+ *  This DC is private and does not need to be released.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.

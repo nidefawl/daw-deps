@@ -17,7 +17,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <linmath.h>
@@ -395,7 +396,7 @@ int main(int argc, char* argv[])
 
     glfwSetErrorCallback(error_callback);
 
-    if (!glfwInit())
+    if (!glfwInit("TEST"))
         exit(EXIT_FAILURE);
 
     window = glfwCreateWindow(640, 480, "Wave Simulation", NULL, NULL);
@@ -412,7 +413,7 @@ int main(int argc, char* argv[])
     glfwSetScrollCallback(window, scroll_callback);
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
     glfwSwapInterval(1);
 
     glfwGetFramebufferSize(window, &width, &height);

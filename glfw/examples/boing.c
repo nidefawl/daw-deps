@@ -36,7 +36,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <linmath.h>
@@ -624,7 +625,7 @@ int main( void )
    GLFWwindow* window;
 
    /* Init GLFW */
-   if( !glfwInit() )
+   if( !glfwInit("TEST") )
       exit( EXIT_FAILURE );
 
    window = glfwCreateWindow( 400, 400, "Boing (classic Amiga demo)", NULL, NULL );
@@ -642,7 +643,7 @@ int main( void )
    glfwSetCursorPosCallback(window, cursor_position_callback);
 
    glfwMakeContextCurrent(window);
-   gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+   gladLoadGL(glfwGetProcAddress);
    glfwSwapInterval( 1 );
 
    glfwGetFramebufferSize(window, &width, &height);
