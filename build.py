@@ -122,5 +122,4 @@ for buildType in range(2):
     buildLibrary(buildType, linkMode, "portaudio" , extraArgs=extraArgs, optionalCmakeArgs=optionalCmakeArgsPortAudio)
     buildLibrary(buildType, linkMode, "portmidi", extraArgs=extraArgs)
     buildLibrary(buildType, linkMode, "pybind11", extraArgs=extraArgs, optionalCmakeArgs=" -DPYBIND11_TEST:BOOL=Off -DPYBIND11_INSTALL:BOOL=On")
-    buildLibrary(buildType, linkMode, "duktape", extraArgs=extraArgs)
     
