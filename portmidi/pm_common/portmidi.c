@@ -324,13 +324,17 @@ PMEXPORT PmError Pm_Initialize( void ) {
 
 
 PMEXPORT PmError Pm_Terminate( void ) {
+    int i;
     if (pm_initialized) {
         pm_term();
         // if there are no devices, descriptors might still be NULL
         if (descriptors != NULL) {
-            free(descriptors);
-            descriptors = NULL;
+            for (i = 0; i < pm_descriptor_index; i++) {
+                pm_free((void*) descriptors[i].pub.name);
+            }
         }
+        pm_free(descriptors);
+        descriptors = NULL;
         pm_descriptor_index = 0;
         pm_descriptor_max = 0;
         pm_initialized = FALSE;

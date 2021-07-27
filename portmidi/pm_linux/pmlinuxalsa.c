@@ -780,11 +780,8 @@ PmError pm_linuxalsa_init( void )
 
 void pm_linuxalsa_term(void)
 {
+    int i;
     if (seq) {
         snd_seq_close(seq);
-        pm_free(descriptors);
-        descriptors = NULL;
-        pm_descriptor_index = 0;
-        pm_descriptor_max = 0;
     }
 }

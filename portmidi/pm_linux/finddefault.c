@@ -42,6 +42,7 @@ PmDeviceID find_default_device(char *path, int input, PmDeviceID id)
     char *full_name, *path_ptr;
     FILE *inf;
     int c, i;
+    full_name = NULL;
     if (!pref_1) goto nopref; // cannot find preference file
     // full_name will be larger than necessary
     full_name  = malloc(strlen(pref_1) + strlen(pref_2) + strlen(pref_3) +
@@ -88,5 +89,6 @@ PmDeviceID find_default_device(char *path, int input, PmDeviceID id)
         break;
     }
  nopref:
+    free(full_name);
     return id;
 }
