@@ -44,9 +44,9 @@
   #endif
 
   #define timerStart(msecs) struct timespec stop, tmp; get_time(&stop), \
-      stop.tv_frac += (msecs%k)*K, \
-      stop.tv_sec  += msecs/k + stop.tv_frac/(K*k), \
-      stop.tv_frac %= K*k
+      stop.tv_frac += (msecs%MSECS_TO_SECS)*K, \
+      stop.tv_sec  += msecs/MSECS_TO_SECS + stop.tv_frac/(K*MSECS_TO_SECS), \
+      stop.tv_frac %= K*MSECS_TO_SECS
   #define timerRunning() (get_time(&tmp), \
       (tmp.tv_sec < stop.tv_sec || tmp.tv_frac < stop.tv_frac))
 #endif
