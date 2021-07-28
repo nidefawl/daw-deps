@@ -1,0 +1,3 @@
+[submodule "tinyspline"] 
+  path = tinyspline 
+  url = https://github.com/msteinbeck/tinyspline.git
