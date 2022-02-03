@@ -60,8 +60,8 @@ my_env = os.environ
 
 
 def buildLibrary(linkMode, name, extraArgs, optionalCmakeArgs=""):
-    BUILD_LOCATION = f'{PATH_DEPS_BUILD_DIR}{os.path.sep}build-{COMPILER_NAME}-{LINK_MODE_STRING[linkMode]}{os.path.sep}{name}'.lower()
-    SRC_LOCATION = f'{PATH_DEPS_REPO}{os.path.sep}{name}'.lower()
+    BUILD_LOCATION = f'{PATH_DEPS_BUILD_DIR}{os.path.sep}build-{COMPILER_NAME}-{LINK_MODE_STRING[linkMode]}{os.path.sep}{name}'
+    SRC_LOCATION = f'{PATH_DEPS_REPO}{os.path.sep}{name}'
 
     # print("SRC_LOCATION %s"%SRC_LOCATION)
     # print("BUILD_LOCATION %s"%BUILD_LOCATION)
@@ -79,7 +79,7 @@ def buildLibrary(linkMode, name, extraArgs, optionalCmakeArgs=""):
         
         
     for buildType in range(2):
-        INSTALL_LOCATION = f'{PATH_DEPS_INSTALL_DIR}{os.path.sep}lib-{COMPILER_NAME}-{BUILD_TYPE_STRING[buildType]}-{LINK_MODE_STRING[linkMode]}{os.path.sep}{name}'.lower()
+        INSTALL_LOCATION = f'{PATH_DEPS_INSTALL_DIR}{os.path.sep}lib-{COMPILER_NAME}-{BUILD_TYPE_STRING[buildType].lower()}-{LINK_MODE_STRING[linkMode]}{os.path.sep}{name}'
         print("INSTALL_LOCATION %s"%INSTALL_LOCATION)
     
         mkdir_p(INSTALL_LOCATION)
