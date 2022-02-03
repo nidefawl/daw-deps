@@ -3,7 +3,7 @@
 # 20 Sep 2009
 # Modified by Michael Hept 2019-2021
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.1)
 
 PROJECT(portmidi)
 

@@ -10,7 +10,7 @@ if(APPLE OR WIN32)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
 else(APPLE OR WIN32)
-  set(LINUX_FLAGS "-DPMALSA")
+  add_compile_definitions(PMALSA)
 endif(APPLE OR WIN32)
 
 if(APPLE)
@@ -27,22 +27,14 @@ macro(prepend_path RESULT PATH)
   endforeach(FILE)
 endmacro(prepend_path)
 
-set(CMAKE_C_FLAGS_DEBUG 
-    "${DEFAULT_DEBUG_FLAGS} -DPM_CHECK_ERRORS=1 -DDEBUG ${LINUX_FLAGS}"
-    CACHE STRING "enable extra checks for debugging" FORCE)
-
-set(CMAKE_C_FLAGS_RELEASE "${DEFAULT_RELEASE_FLAGS} ${LINUX_FLAGS}"
-    CACHE STRING "flags for release version" FORCE)
+add_compile_definitions( $<$<CONFIG:Debug>:PM_CHECK_ERRORS=1>)
 
 # first include the appropriate system-dependent file:
 if(UNIX)
-  # add the -g switch for Linux and Mac OS X (not used in Win32)
-  set (CMAKE_C_FLAGS_DEBUG "-g ${CMAKE_C_FLAGS_DEBUG}" 
-       CACHE STRING "enable extra checks for debugging" FORCE)
   if(APPLE)
-    set(MACSRC pmmacosxcm pmmac readbinaryplist finddefault)
+    set(MACSRC pmmacosxcm.c pmmac.c readbinaryplist.c finddefault.c)
     prepend_path(LIBSRC ../pm_mac/ ${MACSRC})
-    list(APPEND LIBSRC ../porttime/ptmacosx_mach)
+    list(APPEND LIBSRC ../porttime/ptmacosx_mach.c)
 
     include_directories(${CMAKE_OSX_SYSROOT}/Developer/Headers/FlatCarbon)
     set(FRAMEWORK_PATH ${CMAKE_OSX_SYSROOT}/System/Library/Frameworks)
@@ -50,17 +42,19 @@ if(UNIX)
     set(COREFOUNDATION_LIB "${FRAMEWORK_PATH}/CoreFoundation.framework")
     set(COREMIDI_LIB "${FRAMEWORK_PATH}/CoreMIDI.framework")
     set(CORESERVICES_LIB "${FRAMEWORK_PATH}/CoreServices.framework")
-    set(PM_NEEDED_LIBS ${COREAUDIO_LIB} ${COREFOUNDATION_LIB}
-                             ${COREMIDI_LIB} ${CORESERVICES_LIB}
-        CACHE INTERNAL "")
+    set(PM_NEEDED_LIBS ${COREAUDIO_LIB} 
+                       ${COREFOUNDATION_LIB} 
+                       ${COREMIDI_LIB} 
+                       ${CORESERVICES_LIB} 
+                       CACHE INTERNAL "")
 
     message(STATUS "SYSROOT: " ${CMAKE_OSX_SYSROOT})
   else(APPLE)
     # LINUX settings...
 
-    set(LINUXSRC pmlinuxalsa pmlinux finddefault)
+    set(LINUXSRC pmlinuxalsa.c pmlinux.c finddefault.c)
     prepend_path(LIBSRC ../pm_linux/ ${LINUXSRC})
-    list(APPEND LIBSRC ../porttime/ptlinux)
+    list(APPEND LIBSRC ../porttime/ptlinux.c)
 
     set(PM_NEEDED_LIBS pthread asound)
   endif(APPLE)
@@ -70,18 +64,18 @@ else(UNIX)
     # /MD is multithread DLL, /MT is multithread. Change to static:
     #include(../pm_win/static.cmake)
     
-    set(WINSRC pmwin pmwinmm)
+    set(WINSRC pmwin.c pmwinmm.c)
     prepend_path(LIBSRC ../pm_win/ ${WINSRC})
-    list(APPEND LIBSRC ../porttime/ptwinmm)
+    list(APPEND LIBSRC ../porttime/ptwinmm.c)
     set(PM_NEEDED_LIBS winmm.lib)
   endif(WIN32)
 endif(UNIX)
 
 # this completes the list of library sources by adding shared code
-list(APPEND LIBSRC pmutil portmidi)
+list(APPEND LIBSRC pmutil.c portmidi.c)
 
 # now add the shared files to make the complete list of library sources
-add_library(portmidi-static ${LIBSRC})
+add_library(portmidi-static STATIC ${LIBSRC})
 set_target_properties(portmidi-static PROPERTIES OUTPUT_NAME "portmidi_s")
 target_link_libraries(portmidi-static ${PM_NEEDED_LIBS})
 
