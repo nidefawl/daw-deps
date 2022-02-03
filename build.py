@@ -38,12 +38,15 @@ BUILD_TYPE_DEBUG=1
 LINK_MODE_STATIC=0
 LINK_MODE_SHARED=1
 
-CMAKE_CXX_COMPILER_ID = "clang"
+IS_MSVC = 'VisualStudioVersion' in os.environ
+
+COMPILER_NAME = "clang" if not IS_MSVC else 'msvc'
 BUILD_TYPE_STRING = ["Release", "Debug"]
 LINK_MODE_STRING = ["static", "shared"]
+BUILD_FILE_GENERATOR = '-G"Ninja Multi-Config"'
 
-
-
+if COMPILER_NAME == "msvc":
+    BUILD_FILE_GENERATOR = ""
 
 # # build path to vcvarsall.bat file
 # vcvarsall = os.path.join(vspath, "VC", "Auxiliary", "Build", "vcvarsall.bat")
@@ -56,70 +59,61 @@ my_env = os.environ
 # set up the environment and then call cmake with Ninja generator
 
 
-def buildLibrary(buildType, linkMode, name, extraArgs, optionalCmakeArgs=""):
-    BUILD_PATH_SUFFIX = CMAKE_CXX_COMPILER_ID + "-" + BUILD_TYPE_STRING[buildType] + "-" + LINK_MODE_STRING[linkMode]
-    BUILD_PATH_SUFFIX = BUILD_PATH_SUFFIX.lower()
-    DEPS_BUILD_FOLDER_LIBS = "lib-" + BUILD_PATH_SUFFIX
-    DEPS_BUILD_FOLDER_TMP = "tmp-" + BUILD_PATH_SUFFIX
-    PATH_DEPS_BUILD_FOLDER_LIBS = PATH_DEPS_INSTALL_DIR + "/" + DEPS_BUILD_FOLDER_LIBS
-    PATH_DEPS_BUILD_FOLDER_TMP = PATH_DEPS_BUILD_DIR + "/" + DEPS_BUILD_FOLDER_TMP
+def buildLibrary(linkMode, name, extraArgs, optionalCmakeArgs=""):
+    BUILD_LOCATION = f'{PATH_DEPS_BUILD_DIR}{os.path.sep}build-{COMPILER_NAME}-{LINK_MODE_STRING[linkMode]}{os.path.sep}{name}'.lower()
+    SRC_LOCATION = f'{PATH_DEPS_REPO}{os.path.sep}{name}'.lower()
 
-    pathSrc = PATH_DEPS_REPO + "/" + name
-    pathBuild = PATH_DEPS_BUILD_FOLDER_TMP + "/" + name
-    pathInstall = PATH_DEPS_BUILD_FOLDER_LIBS + "/" + name
-    print("pathSrc %s"%pathSrc)
-    print("pathBuild %s"%pathBuild)
-    print("pathInstall %s"%pathInstall)
-    makeFileType = " "
-    print("%s"%platform.system())
-    if platform.system() == "Windows":
-        makeFileType = '-G "Ninja" '
-    cmd = 'cd "'+pathBuild+'" && cmake '+makeFileType + pathSrc
-    cmdInstall = 'cd "'+pathBuild+'" && cmake --build . --target install'
-    if (buildType == BUILD_TYPE_DEBUG):
-      cmd += " -DCMAKE_BUILD_TYPE:String=Debug"
-      cmdInstall += " --config Debug"
-    else:
-      cmd += " -DCMAKE_BUILD_TYPE:String=Release"
-      cmdInstall += " --config Release"
-    if (linkMode == LINK_MODE_STATIC):
-      cmd += " -DBUILD_SHARED_LIBS:BOOL=Off"
-    else:
-      cmd += " -DBUILD_SHARED_LIBS:BOOL=On"
-    if len(extraArgs) > 0:
-        cmd += extraArgs
-    cmd += " -DCMAKE_INSTALL_PREFIX="+pathInstall
-      
-    cmd += optionalCmakeArgs
-
-    mkdir_p(pathBuild)
-    print("%s"%cmd)
-    ret = subprocess.call(cmd, stderr=subprocess.STDOUT, shell=True, env=my_env)
+    # print("SRC_LOCATION %s"%SRC_LOCATION)
+    # print("BUILD_LOCATION %s"%BUILD_LOCATION)
+    
+    SHARED_LIBS = 'Off' if linkMode==LINK_MODE_STATIC else 'On'
+    
+    CMD_CMAKE_CONFIGURE = f'cmake {BUILD_FILE_GENERATOR} -S"{SRC_LOCATION}" -B"{BUILD_LOCATION}" -DBUILD_SHARED_LIBS:BOOL={SHARED_LIBS} {extraArgs} {optionalCmakeArgs}'
+    
+    mkdir_p(BUILD_LOCATION)
+    
+    print("%s"%CMD_CMAKE_CONFIGURE)
+    ret = subprocess.call(CMD_CMAKE_CONFIGURE, stderr=subprocess.STDOUT, shell=True, env=my_env)
     if 0 != ret:
         raise Exception("subprocess call returned %d"%ret)
-    mkdir_p(pathInstall)
-    print("%s"%cmdInstall)
-    ret = subprocess.call(cmdInstall, stderr=subprocess.STDOUT, shell=True, env=my_env)
-    if 0 != ret:
-        raise Exception("subprocess call returned %d"%ret)
+        
+        
+    for buildType in range(2):
+        INSTALL_LOCATION = f'{PATH_DEPS_INSTALL_DIR}{os.path.sep}lib-{COMPILER_NAME}-{BUILD_TYPE_STRING[buildType]}-{LINK_MODE_STRING[linkMode]}{os.path.sep}{name}'.lower()
+        print("INSTALL_LOCATION %s"%INSTALL_LOCATION)
+    
+        mkdir_p(INSTALL_LOCATION)
+        
+        
+        CMD_CMAKE_SET_INSTALL_LOCATION = f'cmake -DCMAKE_INSTALL_PREFIX:PATH="{INSTALL_LOCATION}" "{BUILD_LOCATION}"'
+        # print("%s"%CMD_CMAKE_SET_INSTALL_LOCATION)
+        ret = subprocess.call(CMD_CMAKE_SET_INSTALL_LOCATION, stderr=subprocess.STDOUT, shell=True, env=my_env)
+        if 0 != ret:
+            raise Exception("subprocess call returned %d"%ret)
+        
+        CMD_CMAKE_BUILD_AND_INSTALL = f'cmake --build "{BUILD_LOCATION}" --config {BUILD_TYPE_STRING[buildType]} --target install'
+        
+        # print("%s"%CMD_CMAKE_BUILD_AND_INSTALL)
+        ret = subprocess.call(CMD_CMAKE_BUILD_AND_INSTALL, stderr=subprocess.STDOUT, shell=True, env=my_env)
+        if 0 != ret:
+            raise Exception("subprocess call returned %d"%ret)
     
 
 
 
-for buildType in range(2):
-    linkMode=LINK_MODE_STATIC
-    buildLibrary(buildType, linkMode, "glfw" , extraArgs=extraArgs, optionalCmakeArgs=" -DGLFW_BUILD_DOCS:BOOL=OFF -DGLFW_BUILD_TESTS:BOOL=OFF -DGLFW_BUILD_EXAMPLES:BOOL=OFF")
-    buildLibrary(buildType, linkMode, "SQLiteCpp" , extraArgs=extraArgs, optionalCmakeArgs=" -DSQLITECPP_RUN_CPPCHECK:BOOL=OFF -DSQLITECPP_RUN_CPPLINT:BOOL=OFF -DSQLITECPP_INTERNAL_SQLITE:BOOL=ON ")
-    buildLibrary(buildType, linkMode, "soxr" , extraArgs=extraArgs, optionalCmakeArgs=" -DBUILD_EXAMPLES:BOOL=OFF -DBUILD_TESTS:BOOL=ON -DWITH_OPENMP:BOOL=OFF -DBUILD_SHARED_LIBS:BOOL=ON")
-    optionalCmakeArgsPortAudio=" -DPA_DLL_LINK_WITH_STATIC_RUNTIME:BOOL=OFF -DPA_ENABLE_DEBUG_OUTPUT:BOOL=Off"
-    if (linkMode == LINK_MODE_STATIC):
-        optionalCmakeArgsPortAudio += " -DPA_BUILD_SHARED:BOOL=Off"
-        optionalCmakeArgsPortAudio += " -DPA_BUILD_STATIC:BOOL=On"
-    else:
-        optionalCmakeArgsPortAudio += " -DPA_BUILD_SHARED:BOOL=On"
-        optionalCmakeArgsPortAudio += " -DPA_BUILD_STATIC:BOOL=Off"
+linkMode=LINK_MODE_STATIC
+buildLibrary(linkMode, "glfw" , extraArgs=extraArgs, optionalCmakeArgs=" -DGLFW_BUILD_DOCS:BOOL=OFF -DGLFW_BUILD_TESTS:BOOL=OFF -DGLFW_BUILD_EXAMPLES:BOOL=OFF")
+buildLibrary(linkMode, "SQLiteCpp" , extraArgs=extraArgs, optionalCmakeArgs=" -DSQLITECPP_RUN_CPPCHECK:BOOL=OFF -DSQLITECPP_RUN_CPPLINT:BOOL=OFF -DSQLITECPP_INTERNAL_SQLITE:BOOL=ON ")
+buildLibrary(linkMode, "soxr" , extraArgs=extraArgs, optionalCmakeArgs=" -DBUILD_EXAMPLES:BOOL=OFF -DBUILD_TESTS:BOOL=OFF -DWITH_OPENMP:BOOL=OFF")
+optionalCmakeArgsPortAudio=" -DPA_DLL_LINK_WITH_STATIC_RUNTIME:BOOL=OFF -DPA_ENABLE_DEBUG_OUTPUT:BOOL=Off"
+if (linkMode == LINK_MODE_STATIC):
+    optionalCmakeArgsPortAudio += " -DPA_BUILD_SHARED:BOOL=Off"
+    optionalCmakeArgsPortAudio += " -DPA_BUILD_STATIC:BOOL=On"
+else:
+    optionalCmakeArgsPortAudio += " -DPA_BUILD_SHARED:BOOL=On"
+    optionalCmakeArgsPortAudio += " -DPA_BUILD_STATIC:BOOL=Off"
 
-    buildLibrary(buildType, linkMode, "portaudio" , extraArgs=extraArgs, optionalCmakeArgs=optionalCmakeArgsPortAudio)
-    buildLibrary(buildType, linkMode, "portmidi", extraArgs=extraArgs)
-    buildLibrary(buildType, linkMode, "pybind11", extraArgs=extraArgs, optionalCmakeArgs=" -DPYBIND11_TEST:BOOL=Off -DPYBIND11_INSTALL:BOOL=On")
+buildLibrary(linkMode, "portaudio" , extraArgs=extraArgs, optionalCmakeArgs=optionalCmakeArgsPortAudio)
+buildLibrary(linkMode, "portmidi", extraArgs=extraArgs)
+buildLibrary(linkMode, "pybind11", extraArgs=extraArgs, optionalCmakeArgs=" -DPYBIND11_TEST:BOOL=Off -DPYBIND11_INSTALL:BOOL=On")
     
