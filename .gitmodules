@@ -29,3 +29,7 @@
 	path = cereal
 	url = https://github.com/USCiLab/cereal.git
 	shallow = true
+[submodule "soxr"]
+	path = soxr
+	url = https://github.com/ShiftMediaProject/soxr
+	shallow = true
