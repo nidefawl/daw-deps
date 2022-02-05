@@ -25,3 +25,7 @@
 	path = kissfft
 	url = https://github.com/nidefawl/kissfft.git
 	shallow = true
+[submodule "cereal"]
+	path = cereal
+	url = https://github.com/USCiLab/cereal.git
+	shallow = true
