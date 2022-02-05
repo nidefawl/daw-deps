@@ -121,3 +121,7 @@ buildLibrary(linkMode, "portaudio" , extraArgs=extraArgs, optionalCmakeArgs = po
 buildLibrary(linkMode, "portmidi", extraArgs=extraArgs, optionalCmakeArgs=" -DPM_USE_STATIC_RUNTIME=OFF")
 
 buildLibrary(linkMode, "pybind11", extraArgs=extraArgs, optionalCmakeArgs=" -DPYBIND11_TEST:BOOL=OFF -DPYBIND11_INSTALL:BOOL=On")
+
+kissfftConfig = " -DKISSFFT_TEST=OFF -DKISSFFT_OPENMP=0 -DKISSFFT_DATATYPE=float -DKISSFFT_TOOLS=OFF -DKISSFFT_USE_ALLOCA=OFF -DKISSFFT_PKGCONFIG=OFF "
+kissfftConfig += " -DKISSFFT_STATIC=" + ('ON' if linkMode==LINK_MODE_STATIC else 'OFF')
+buildLibrary(linkMode, "kissfft", extraArgs=extraArgs, optionalCmakeArgs=kissfftConfig)
