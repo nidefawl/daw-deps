@@ -1,3 +1,15 @@
 [submodule "tinyspline"] 
   path = tinyspline 
   url = https://github.com/msteinbeck/tinyspline.git
+[submodule "SQLiteCpp"]
+	path = SQLiteCpp
+	url = https://github.com/SRombauts/SQLiteCpp.git
+	shallow = true
+[submodule "portaudio"]
+	path = portaudio
+	url = https://github.com/PortAudio/portaudio.git
+	shallow = true
+[submodule "portmidi"]
+	path = portmidi
+	url = https://github.com/nidefawl/portmidi
+	shallow = true
