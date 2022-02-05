@@ -24,7 +24,7 @@ extraArgs = ""
 if len(sysargs) > 3:
     extraArgs=" "+(" ".join(sysargs[3:]))+" "
 
-
+PRINT_CMDS_ONLY = False
 
 PATH_DEPS_REPO=script_path
 PATH_DEPS_BUILD_DIR = os.path.abspath(sysargs[1])
@@ -70,50 +70,51 @@ def buildLibrary(linkMode, name, extraArgs, optionalCmakeArgs=""):
     
     CMD_CMAKE_CONFIGURE = f'cmake {BUILD_FILE_GENERATOR} -S"{SRC_LOCATION}" -B"{BUILD_LOCATION}" -DBUILD_SHARED_LIBS:BOOL={SHARED_LIBS} {extraArgs} {optionalCmakeArgs}'
     
-    mkdir_p(BUILD_LOCATION)
     
     print("%s"%CMD_CMAKE_CONFIGURE)
-    ret = subprocess.call(CMD_CMAKE_CONFIGURE, stderr=subprocess.STDOUT, shell=True, env=my_env)
-    if 0 != ret:
-        raise Exception("subprocess call returned %d"%ret)
-        
-        
+    if not PRINT_CMDS_ONLY:
+      mkdir_p(BUILD_LOCATION)
+      ret = subprocess.call(CMD_CMAKE_CONFIGURE, stderr=subprocess.STDOUT, shell=True, env=my_env)
+      if 0 != ret:
+          raise Exception("subprocess call returned %d"%ret)
+
+
     for buildType in range(2):
         INSTALL_LOCATION = f'{PATH_DEPS_INSTALL_DIR}{os.path.sep}lib-{COMPILER_NAME}-{BUILD_TYPE_STRING[buildType].lower()}-{LINK_MODE_STRING[linkMode]}{os.path.sep}{name}'
         print("INSTALL_LOCATION %s"%INSTALL_LOCATION)
-    
-        mkdir_p(INSTALL_LOCATION)
-        
-        
+
         CMD_CMAKE_SET_INSTALL_LOCATION = f'cmake -DCMAKE_INSTALL_PREFIX:PATH="{INSTALL_LOCATION}" "{BUILD_LOCATION}"'
-        # print("%s"%CMD_CMAKE_SET_INSTALL_LOCATION)
-        ret = subprocess.call(CMD_CMAKE_SET_INSTALL_LOCATION, stderr=subprocess.STDOUT, shell=True, env=my_env)
-        if 0 != ret:
-            raise Exception("subprocess call returned %d"%ret)
+        print("%s"%CMD_CMAKE_SET_INSTALL_LOCATION)
+        
+        if not PRINT_CMDS_ONLY:
+          mkdir_p(INSTALL_LOCATION)
+
+          ret = subprocess.call(CMD_CMAKE_SET_INSTALL_LOCATION, stderr=subprocess.STDOUT, shell=True, env=my_env)
+          if 0 != ret:
+              raise Exception("subprocess call returned %d"%ret)
         
         CMD_CMAKE_BUILD_AND_INSTALL = f'cmake --build "{BUILD_LOCATION}" --config {BUILD_TYPE_STRING[buildType]} --target install'
-        
-        # print("%s"%CMD_CMAKE_BUILD_AND_INSTALL)
-        ret = subprocess.call(CMD_CMAKE_BUILD_AND_INSTALL, stderr=subprocess.STDOUT, shell=True, env=my_env)
-        if 0 != ret:
+        print("%s"%CMD_CMAKE_BUILD_AND_INSTALL)
+
+
+        if not PRINT_CMDS_ONLY:
+          ret = subprocess.call(CMD_CMAKE_BUILD_AND_INSTALL, stderr=subprocess.STDOUT, shell=True, env=my_env)
+          if 0 != ret:
             raise Exception("subprocess call returned %d"%ret)
+        
+        print('\n')
     
 
 
 
 linkMode=LINK_MODE_STATIC
 buildLibrary(linkMode, "glfw" , extraArgs=extraArgs, optionalCmakeArgs=" -DGLFW_BUILD_DOCS:BOOL=OFF -DGLFW_BUILD_TESTS:BOOL=OFF -DGLFW_BUILD_EXAMPLES:BOOL=OFF")
-buildLibrary(linkMode, "SQLiteCpp" , extraArgs=extraArgs, optionalCmakeArgs=" -DSQLITECPP_RUN_CPPCHECK:BOOL=OFF -DSQLITECPP_RUN_CPPLINT:BOOL=OFF -DSQLITECPP_INTERNAL_SQLITE:BOOL=ON ")
+buildLibrary(linkMode, "SQLiteCpp" , extraArgs=extraArgs, optionalCmakeArgs=" -DSQLITECPP_RUN_CPPCHECK:BOOL=OFF -DSQLITECPP_RUN_CPPLINT:BOOL=OFF -DSQLITECPP_INTERNAL_SQLITE:BOOL=ON -DSQLITECPP_USE_STATIC_RUNTIME:BOOL=OFF -DSQLITECPP_USE_STACK_PROTECTION:BOOL=OFF")
 buildLibrary(linkMode, "soxr" , extraArgs=extraArgs, optionalCmakeArgs=" -DBUILD_EXAMPLES:BOOL=OFF -DBUILD_TESTS:BOOL=OFF -DWITH_OPENMP:BOOL=OFF")
-optionalCmakeArgsPortAudio=" -DPA_DLL_LINK_WITH_STATIC_RUNTIME:BOOL=OFF -DPA_ENABLE_DEBUG_OUTPUT:BOOL=Off"
-if (linkMode == LINK_MODE_STATIC):
-    optionalCmakeArgsPortAudio += " -DPA_BUILD_SHARED:BOOL=Off"
-    optionalCmakeArgsPortAudio += " -DPA_BUILD_STATIC:BOOL=On"
-else:
-    optionalCmakeArgsPortAudio += " -DPA_BUILD_SHARED:BOOL=On"
-    optionalCmakeArgsPortAudio += " -DPA_BUILD_STATIC:BOOL=Off"
-
+optionalCmakeArgsPortAudio=" -DPA_DLL_LINK_WITH_STATIC_RUNTIME:BOOL=OFF -DPA_ENABLE_DEBUG_OUTPUT:BOOL=OFF"
+if platform.system() == "Windows":
+  optionalCmakeArgsPortAudio +=" -DPA_USE_ASIO:BOOL=On"
 buildLibrary(linkMode, "portaudio" , extraArgs=extraArgs, optionalCmakeArgs=optionalCmakeArgsPortAudio)
-buildLibrary(linkMode, "portmidi", extraArgs=extraArgs)
-buildLibrary(linkMode, "pybind11", extraArgs=extraArgs, optionalCmakeArgs=" -DPYBIND11_TEST:BOOL=Off -DPYBIND11_INSTALL:BOOL=On")
+buildLibrary(linkMode, "portmidi", extraArgs=extraArgs, optionalCmakeArgs=" -DPM_USE_STATIC_RUNTIME=OFF")
+buildLibrary(linkMode, "pybind11", extraArgs=extraArgs, optionalCmakeArgs=" -DPYBIND11_TEST:BOOL=OFF -DPYBIND11_INSTALL:BOOL=On")
     
