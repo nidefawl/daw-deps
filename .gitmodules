@@ -33,3 +33,7 @@
 	path = soxr
 	url = https://github.com/ShiftMediaProject/soxr
 	shallow = true
+[submodule "glfw"]
+	path = glfw
+	url = https://github.com/nidefawl/glfw
+	shallow = true
