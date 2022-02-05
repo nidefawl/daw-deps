@@ -117,7 +117,7 @@ GLFW_ARGS=[
   'GLFW_BUILD_TESTS:BOOL=OFF',
   'GLFW_BUILD_EXAMPLES:BOOL=OFF'
 ]
-# buildLibrary(linkMode, "glfw" , ' -D'.join(GLFW_ARGS))
+buildLibrary(linkMode, "glfw" , ' -D'.join(GLFW_ARGS))
 
 SQLITECPP_ARGS=[
   '',
@@ -127,7 +127,7 @@ SQLITECPP_ARGS=[
   'SQLITECPP_USE_STATIC_RUNTIME:BOOL=OFF',
   'SQLITECPP_USE_STACK_PROTECTION:BOOL=OFF',
 ]
-# buildLibrary(linkMode, "SQLiteCpp" , ' -D'.join(SQLITECPP_ARGS))
+buildLibrary(linkMode, "SQLiteCpp" , ' -D'.join(SQLITECPP_ARGS))
 
 SOXR_ARGS=[
   '',
@@ -148,11 +148,11 @@ PORTAUDIO_ARGS = [
 if platform.system() == "Windows":
   PORTAUDIO_ARGS.append('PA_USE_ASIO:BOOL=ON')
 
-# buildLibrary(linkMode, "portaudio" , ' -D'.join(PORTAUDIO_ARGS))
+buildLibrary(linkMode, "portaudio" , ' -D'.join(PORTAUDIO_ARGS))
 
-# buildLibrary(linkMode, "portmidi", " -DPM_USE_STATIC_RUNTIME=OFF")
+buildLibrary(linkMode, "portmidi", " -DPM_USE_STATIC_RUNTIME=OFF")
 
-# buildLibrary(linkMode, "pybind11", " -DPYBIND11_TEST:BOOL=OFF -DPYBIND11_INSTALL:BOOL=On")
+buildLibrary(linkMode, "pybind11", " -DPYBIND11_TEST:BOOL=OFF -DPYBIND11_INSTALL:BOOL=On")
 
 KISSFFT_ARGS = [
   '',
@@ -165,4 +165,4 @@ KISSFFT_ARGS = [
   'KISSFFT_STATIC=' + ('ON' if linkMode==LINK_MODE_STATIC else 'OFF')
 ]
 
-# buildLibrary(linkMode, "kissfft", ' -D'.join(KISSFFT_ARGS))
+buildLibrary(linkMode, "kissfft", ' -D'.join(KISSFFT_ARGS))
