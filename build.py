@@ -21,7 +21,7 @@ script_path = os.path.dirname(os.path.abspath( __file__ ))
 sysargs = sys.argv[:]
 
 if len(sysargs) < 3:
-	sysargs = [__file__, "./build", "./install"]
+    sysargs = [__file__, "./build", "./install"]
 
 
 CMDLINE_EXTRA_ARGS = None
@@ -43,6 +43,13 @@ BUILD_TYPE_RELEASE=0
 BUILD_TYPE_DEBUG=1
 LINK_MODE_STATIC=0
 LINK_MODE_SHARED=1
+
+# from pprint import pprint
+# cleanenv={}
+# for key,val in os.environ.items():
+#   cleanenv[key] = val
+# pprint(cleanenv)
+# sys.exit(0)
 
 IS_MSVC = 'VisualStudioVersion' in os.environ
 
@@ -69,8 +76,8 @@ def buildLibrary(linkMode, name, cmakeConfig):
     
     CMD_CMAKE_CONFIGURE = f'cmake {BUILD_FILE_GENERATOR} -S"{SRC_LOCATION}" -B"{BUILD_LOCATION}" -DBUILD_SHARED_LIBS:BOOL={SHARED_LIBS} '
 
-    if cmakeConfig: CMD_CMAKE_CONFIGURE += cmakeConfig
-    if CMDLINE_EXTRA_ARGS: CMD_CMAKE_CONFIGURE += CMDLINE_EXTRA_ARGS
+    if cmakeConfig: CMD_CMAKE_CONFIGURE += f' {cmakeConfig}'
+    if CMDLINE_EXTRA_ARGS: CMD_CMAKE_CONFIGURE += f' {CMDLINE_EXTRA_ARGS}'
     
     print("%s"%CMD_CMAKE_CONFIGURE)
     if not PRINT_CMDS_ONLY:
