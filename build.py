@@ -156,7 +156,7 @@ buildLibrary('portaudio', ' -D'.join(PORTAUDIO_ARGS), ['Release', 'Debug'])
 
 buildLibrary('portmidi', ' -DBUILD_SHARED_LIBS:BOOL=OFF -DPM_USE_STATIC_RUNTIME=OFF', ['Release', 'Debug'])
 
-buildLibrary('pybind11', ' -DBUILD_SHARED_LIBS:BOOL=OFF -DPYBIND11_TEST:BOOL=OFF -DPYBIND11_INSTALL:BOOL=On', ['Release', 'Debug'])
+buildLibrary('pybind11', ' -DBUILD_SHARED_LIBS:BOOL=OFF -DPYBIND11_TEST:BOOL=OFF -DPYBIND11_INSTALL:BOOL=On', ['Release'])
 
 KISSFFT_ARGS = [
     '',
