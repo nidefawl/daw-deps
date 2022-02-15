@@ -185,4 +185,4 @@ BENCHMARK_ARGS = [
     'BUILD_SHARED_LIBS:BOOL=OFF'
 ]
 
-buildLibrary('google-benchmark', ' -D'.join(BENCHMARK_ARGS), ['Release', 'Debug'])
+buildLibrary('google-benchmark', ' -D'.join(BENCHMARK_ARGS), ['Release'])
