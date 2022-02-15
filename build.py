@@ -24,10 +24,11 @@ sysargs = sys.argv[:]
 if len(sysargs) < 3:
     sysargs = [__file__, './build', './install']
 
+CMDLINE_LOG_ARGS = " --log-level=WARNING -Wno-dev "
 
 CMDLINE_EXTRA_ARGS = None
 if len(sysargs) > 3:
-    CMDLINE_EXTRA_ARGS = ' '+(' '.join(sysargs[3:]))+' '
+    CMDLINE_EXTRA_ARGS += ' '+(' '.join(sysargs[3:]))+' '
 
 PRINT_CMDS_ONLY = False
 # PRINT_CMDS_ONLY = True
@@ -77,6 +78,8 @@ def buildLibrary(libraryName, cmakeConfig, buildConfigs=['Debug', 'Release']):
         CMD_CMAKE_CONFIGURE += f' {cmakeConfig}'
     if CMDLINE_EXTRA_ARGS:
         CMD_CMAKE_CONFIGURE += f' {CMDLINE_EXTRA_ARGS}'
+    if CMDLINE_LOG_ARGS:
+        CMD_CMAKE_CONFIGURE += f' {CMDLINE_LOG_ARGS}'
 
     print('%s' % CMD_CMAKE_CONFIGURE)
     if not PRINT_CMDS_ONLY:
@@ -91,6 +94,8 @@ def buildLibrary(libraryName, cmakeConfig, buildConfigs=['Debug', 'Release']):
             INSTALL_LOCATION = os.path.join(PATH_DEPS_INSTALL_DIR, libraryName, buildConfig.lower())
         print('INSTALL_LOCATION %s' % INSTALL_LOCATION)
         CMD_CMAKE_SET_INSTALL_LOCATION = f'cmake "{BUILD_LOCATION}" -DCMAKE_INSTALL_PREFIX:PATH="{INSTALL_LOCATION}" '
+        if CMDLINE_LOG_ARGS:
+            CMD_CMAKE_SET_INSTALL_LOCATION += f' {CMDLINE_LOG_ARGS}'
         print('%s' % CMD_CMAKE_SET_INSTALL_LOCATION)
         if not PRINT_CMDS_ONLY:
             mkdir_p(INSTALL_LOCATION)
@@ -99,6 +104,7 @@ def buildLibrary(libraryName, cmakeConfig, buildConfigs=['Debug', 'Release']):
                 raise Exception('subprocess call returned %d' % ret)
 
         CMD_CMAKE_BUILD_AND_INSTALL = f'cmake --build "{BUILD_LOCATION}" --config {buildConfig} --target install'
+
         print('%s' % CMD_CMAKE_BUILD_AND_INSTALL)
 
         if not PRINT_CMDS_ONLY:
