@@ -3,7 +3,7 @@
   url = https://github.com/msteinbeck/tinyspline.git
 [submodule "SQLiteCpp"]
 	path = SQLiteCpp
-	url = https://github.com/SRombauts/SQLiteCpp.git
+	url = https://github.com/nidefawl/SQLiteCpp.git
 	shallow = true
 [submodule "portaudio"]
 	path = portaudio
