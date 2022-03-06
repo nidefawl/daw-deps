@@ -38,6 +38,9 @@ namespace SplineCommon
     size_t getIndexForT(const std::vector<floating_t> &knotData, floating_t t);
 }
 
+template<typename T>
+float lengthSquared(T a);
+
 template<class InterpolationType, typename floating_t>
 floating_t SplineCommon::computeTDiff(InterpolationType p1, InterpolationType p2, floating_t alpha)
 {
@@ -47,7 +50,6 @@ floating_t SplineCommon::computeTDiff(InterpolationType p1, InterpolationType p2
     }
     else
     {
-//        auto distanceSq = (p1 - p2).lengthSquared();
         auto distanceSq = lengthSquared(p1 - p2);
 
         //if these points are right on top of each other, don't bother with the power calculation
