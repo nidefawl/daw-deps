@@ -17,7 +17,8 @@ sysargs = sys.argv[:]
 if len(sysargs) < 3:
     sysargs = [__file__, './build', './install']
 
-CMDLINE_LOG_ARGS = " --log-level=WARNING -Wno-dev "
+CMDLINE_LOG_ARGS = ' --log-level=WARNING -Wno-dev '
+CMDLINE_LOG_ARGS = ''
 
 CMDLINE_EXTRA_ARGS = None
 if len(sysargs) > 3:
@@ -35,6 +36,7 @@ print('PATH_DEPS_BUILD_DIR', PATH_DEPS_BUILD_DIR)
 print('PATH_DEPS_INSTALL_DIR', PATH_DEPS_INSTALL_DIR)
 
 
+IS_WINDOWS = 'Windows' == platform.system()
 IS_MSVC = 'VisualStudioVersion' in os.environ
 
 COMPILER_NAME = 'clang' if not IS_MSVC else 'msvc'
@@ -48,6 +50,7 @@ execution_environ = os.environ
 
 
 def buildLibrary(libraryName, cmakeConfig, buildConfigs):
+
     BUILD_LOCATION = os.path.join(PATH_DEPS_BUILD_DIR, libraryName)
     SRC_LOCATION = f'{PATH_DEPS_REPO}{os.path.sep}{libraryName}'
 
@@ -56,7 +59,11 @@ def buildLibrary(libraryName, cmakeConfig, buildConfigs):
         CMD_CMAKE_CONFIGURE += f' -DCMAKE_BUILD_TYPE={buildConfigs[0]}'
     else:
         CMD_CMAKE_CONFIGURE += ' -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -DCMAKE_DEBUG_POSTFIX=_debug -DCMAKE_RELEASE_POSTFIX=_release'
-
+    
+    # Use llvm-mingw -gcodeview
+    if IS_WINDOWS and not IS_MSVC:
+        CMD_CMAKE_CONFIGURE += ' -DCMAKE_C_FLAGS_DEBUG_INIT="-g -gcodeview" -DCMAKE_CXX_FLAGS_DEBUG_INIT="-g -gcodeview"'
+        CMD_CMAKE_CONFIGURE += ' -DCMAKE_C_FLAGS_RELWITHDEBINFO_INIT="-O2 -g -gcodeview -DNDEBUG" -DCMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT="-O2 -g -gcodeview -DNDEBUG"'
     if cmakeConfig:
         CMD_CMAKE_CONFIGURE += f' {cmakeConfig}'
     if CMDLINE_EXTRA_ARGS:
@@ -72,8 +79,6 @@ def buildLibrary(libraryName, cmakeConfig, buildConfigs):
 
     for buildConfig in buildConfigs:
         INSTALL_LOCATION = os.path.join(PATH_DEPS_INSTALL_DIR)
-        # if len(buildConfigs) > 1:
-        #     INSTALL_LOCATION = os.path.join(PATH_DEPS_INSTALL_DIR, libraryName, buildConfig.lower())
         print('INSTALL_LOCATION', INSTALL_LOCATION)
         CMD_CMAKE_SET_INSTALL_LOCATION = f'cmake "{BUILD_LOCATION}" -DCMAKE_INSTALL_PREFIX:PATH="{INSTALL_LOCATION}" '
         if CMDLINE_LOG_ARGS:
