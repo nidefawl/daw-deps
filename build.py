@@ -14,7 +14,9 @@ script_path = os.path.dirname(os.path.abspath(__file__))
 
 sysargs = sys.argv[:]
 
-if len(sysargs) < 3:
+if len(sysargs) > 1 and sysargs[1][0:1] == '-':
+    sysargs = [__file__, './build', './install', *sysargs[1:]]
+elif len(sysargs) < 3:
     sysargs = [__file__, './build', './install']
 
 CMDLINE_LOG_ARGS = ' --log-level=WARNING -Wno-dev '
@@ -22,7 +24,7 @@ CMDLINE_LOG_ARGS = ''
 
 CMDLINE_EXTRA_ARGS = None
 if len(sysargs) > 3:
-    CMDLINE_EXTRA_ARGS += ' '+(' '.join(sysargs[3:]))+' '
+    CMDLINE_EXTRA_ARGS = ' '+(' '.join(sysargs[3:]))+' '
 
 PRINT_CMDS_ONLY = False
 # PRINT_CMDS_ONLY = True
