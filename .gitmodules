@@ -41,3 +41,6 @@
 	path = google-benchmark
 	url = https://github.com/google/benchmark.git
 	shallow = true
+[submodule "slowstacktrace"]
+	path = slowstacktrace
+	url = git@github.com:nidefawl/slowstacktrace.git
