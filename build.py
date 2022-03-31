@@ -63,9 +63,9 @@ def buildLibrary(libraryName, cmakeConfig, buildConfigs):
         CMD_CMAKE_CONFIGURE += ' -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -DCMAKE_DEBUG_POSTFIX=_debug -DCMAKE_RELEASE_POSTFIX=_release'
     
     # Use llvm-mingw -gcodeview
-    if IS_WINDOWS and not IS_MSVC:
-        CMD_CMAKE_CONFIGURE += ' -DCMAKE_C_FLAGS_DEBUG_INIT="-g -gcodeview" -DCMAKE_CXX_FLAGS_DEBUG_INIT="-g -gcodeview"'
-        CMD_CMAKE_CONFIGURE += ' -DCMAKE_C_FLAGS_RELWITHDEBINFO_INIT="-O2 -g -gcodeview -DNDEBUG" -DCMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT="-O2 -g -gcodeview -DNDEBUG"'
+    # if IS_WINDOWS and not IS_MSVC:
+    #     CMD_CMAKE_CONFIGURE += ' -DCMAKE_C_FLAGS_DEBUG_INIT="-g -gcodeview" -DCMAKE_CXX_FLAGS_DEBUG_INIT="-g -gcodeview"'
+    #     CMD_CMAKE_CONFIGURE += ' -DCMAKE_C_FLAGS_RELWITHDEBINFO_INIT="-O2 -g -gcodeview -DNDEBUG" -DCMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT="-O2 -g -gcodeview -DNDEBUG"'
     if cmakeConfig:
         CMD_CMAKE_CONFIGURE += f' {cmakeConfig}'
     if CMDLINE_EXTRA_ARGS:
