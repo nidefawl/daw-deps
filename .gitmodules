@@ -27,7 +27,7 @@
 	shallow = true
 [submodule "cereal"]
 	path = cereal
-	url = https://github.com/USCiLab/cereal.git
+	url = https://github.com/nidefawl/cereal.git
 	shallow = true
 [submodule "soxr"]
 	path = soxr
