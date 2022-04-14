@@ -9,6 +9,8 @@ import subprocess
 import sys
 import platform
 
+OPTION_RELEASE_FLAGS_GCC_CLANG='-DNDEBUG -O3 -march=native -mtune=native -ffunction-sections -fdata-sections'
+OPTION_RELEASE_FLAGS_MSVC=None
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -62,10 +64,13 @@ def buildLibrary(libraryName, cmakeConfig, buildConfigs):
     else:
         CMD_CMAKE_CONFIGURE += ' -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -DCMAKE_DEBUG_POSTFIX=_debug -DCMAKE_RELEASE_POSTFIX=_release'
     
-    # Use llvm-mingw -gcodeview
-    # if IS_WINDOWS and not IS_MSVC:
-    #     CMD_CMAKE_CONFIGURE += ' -DCMAKE_C_FLAGS_DEBUG_INIT="-g -gcodeview" -DCMAKE_CXX_FLAGS_DEBUG_INIT="-g -gcodeview"'
-    #     CMD_CMAKE_CONFIGURE += ' -DCMAKE_C_FLAGS_RELWITHDEBINFO_INIT="-O2 -g -gcodeview -DNDEBUG" -DCMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT="-O2 -g -gcodeview -DNDEBUG"'
+    CMD_CMAKE_REL_FLAGS = OPTION_RELEASE_FLAGS_MSVC if IS_MSVC else OPTION_RELEASE_FLAGS_GCC_CLANG
+    if CMD_CMAKE_REL_FLAGS is not None:
+        CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
+        CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
+        CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
+        CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
+
     if cmakeConfig:
         CMD_CMAKE_CONFIGURE += f' {cmakeConfig}'
     if CMDLINE_EXTRA_ARGS:
