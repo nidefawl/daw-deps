@@ -45,7 +45,7 @@ IS_MSVC = 'VisualStudioVersion' in os.environ
 
 COMPILER_NAME = 'clang' if not IS_MSVC else 'msvc'
 LINK_MODE_STRING = ['static', 'shared']
-BUILD_FILE_GENERATOR = '-G"Ninja Multi-Config"'
+BUILD_FILE_GENERATOR = '-GNinja'
 
 if COMPILER_NAME == 'msvc':
     BUILD_FILE_GENERATOR = ''
@@ -54,58 +54,40 @@ execution_environ = os.environ
 
 
 def buildLibrary(libraryName, cmakeConfig, buildConfigs):
-
-    BUILD_LOCATION = os.path.join(PATH_DEPS_BUILD_DIR, libraryName)
     SRC_LOCATION = f'{PATH_DEPS_REPO}{os.path.sep}{libraryName}'
 
-    CMD_CMAKE_CONFIGURE = f'cmake {BUILD_FILE_GENERATOR} -S"{SRC_LOCATION}" -B"{BUILD_LOCATION}" '
-    if len(buildConfigs) == 1:
-        CMD_CMAKE_CONFIGURE += f' -DCMAKE_BUILD_TYPE={buildConfigs[0]}'
-    else:
-        CMD_CMAKE_CONFIGURE += ' -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -DCMAKE_DEBUG_POSTFIX=_debug -DCMAKE_RELEASE_POSTFIX=_release'
-    
-    CMD_CMAKE_REL_FLAGS = OPTION_RELEASE_FLAGS_MSVC if IS_MSVC else OPTION_RELEASE_FLAGS_GCC_CLANG
-    if CMD_CMAKE_REL_FLAGS is not None:
-        CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
-        CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
-        CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
-        CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
+    for CMD_BUILD_CONFIG_TYPE in buildConfigs:
+      BUILD_LOCATION = os.path.join(PATH_DEPS_BUILD_DIR, CMD_BUILD_CONFIG_TYPE, libraryName)
+      INSTALL_LOCATION = os.path.join(PATH_DEPS_INSTALL_DIR)
+      CMD_CMAKE_CONFIGURE = f'cmake {BUILD_FILE_GENERATOR} -S"{SRC_LOCATION}" -B"{BUILD_LOCATION}" '
+      CMD_CMAKE_CONFIGURE += f' -DCMAKE_BUILD_TYPE={CMD_BUILD_CONFIG_TYPE}'
+      CMD_CMAKE_CONFIGURE += f' -DCMAKE_INSTALL_PREFIX:PATH="{INSTALL_LOCATION}"'
+      CMD_CMAKE_CONFIGURE += ' -DCMAKE_DEBUG_POSTFIX=_debug -DCMAKE_RELEASE_POSTFIX=_release'
+      CMD_CMAKE_REL_FLAGS = OPTION_RELEASE_FLAGS_MSVC if IS_MSVC else OPTION_RELEASE_FLAGS_GCC_CLANG
+      if CMD_CMAKE_REL_FLAGS is not None:
+          CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
+          CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
+          CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
+          CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
+      if cmakeConfig:
+          CMD_CMAKE_CONFIGURE += f' {cmakeConfig}'
+      if CMDLINE_EXTRA_ARGS:
+          CMD_CMAKE_CONFIGURE += f' {CMDLINE_EXTRA_ARGS}'
+      if CMDLINE_LOG_ARGS:
+          CMD_CMAKE_CONFIGURE += f' {CMDLINE_LOG_ARGS}'
+      print(CMD_CMAKE_CONFIGURE)
+      if not PRINT_CMDS_ONLY:
+          ret = subprocess.call(CMD_CMAKE_CONFIGURE, stderr=subprocess.STDOUT, shell=True, env=execution_environ)
+          if 0 != ret:
+              raise Exception(f'subprocess call returned {ret}')
 
-    if cmakeConfig:
-        CMD_CMAKE_CONFIGURE += f' {cmakeConfig}'
-    if CMDLINE_EXTRA_ARGS:
-        CMD_CMAKE_CONFIGURE += f' {CMDLINE_EXTRA_ARGS}'
-    if CMDLINE_LOG_ARGS:
-        CMD_CMAKE_CONFIGURE += f' {CMDLINE_LOG_ARGS}'
-
-    print(CMD_CMAKE_CONFIGURE)
-    if not PRINT_CMDS_ONLY:
-        ret = subprocess.call(CMD_CMAKE_CONFIGURE, stderr=subprocess.STDOUT, shell=True, env=execution_environ)
-        if 0 != ret:
-            raise Exception(f'subprocess call returned {ret}')
-
-    for buildConfig in buildConfigs:
-        INSTALL_LOCATION = os.path.join(PATH_DEPS_INSTALL_DIR)
-        print('INSTALL_LOCATION', INSTALL_LOCATION)
-        CMD_CMAKE_SET_INSTALL_LOCATION = f'cmake "{BUILD_LOCATION}" -DCMAKE_INSTALL_PREFIX:PATH="{INSTALL_LOCATION}" '
-        if CMDLINE_LOG_ARGS:
-            CMD_CMAKE_SET_INSTALL_LOCATION += f' {CMDLINE_LOG_ARGS}'
-        print(CMD_CMAKE_SET_INSTALL_LOCATION)
-        if not PRINT_CMDS_ONLY:
-            ret = subprocess.call(CMD_CMAKE_SET_INSTALL_LOCATION, stderr=subprocess.STDOUT, shell=True, env=execution_environ)
-            if 0 != ret:
-                raise Exception(f'subprocess call returned {ret}')
-
-        CMD_CMAKE_BUILD_AND_INSTALL = f'cmake --build "{BUILD_LOCATION}" --config {buildConfig} --target install'
-
-        print(CMD_CMAKE_BUILD_AND_INSTALL)
-
-        if not PRINT_CMDS_ONLY:
-            ret = subprocess.call(CMD_CMAKE_BUILD_AND_INSTALL, stderr=subprocess.STDOUT, shell=True, env=execution_environ)
-            if 0 != ret:
-                raise Exception(f'subprocess call returned {ret}')
-
-        print('\n')
+      CMD_CMAKE_BUILD_AND_INSTALL = f'cmake --build "{BUILD_LOCATION}" --target install'
+      print(CMD_CMAKE_BUILD_AND_INSTALL)
+      if not PRINT_CMDS_ONLY:
+          ret = subprocess.call(CMD_CMAKE_BUILD_AND_INSTALL, stderr=subprocess.STDOUT, shell=True, env=execution_environ)
+          if 0 != ret:
+              raise Exception(f'subprocess call returned {ret}')
+      print('\n')
 
 
 GLFW_ARGS = [
@@ -123,6 +105,9 @@ SQLITECPP_ARGS = [
     'SQLITECPP_RUN_CPPLINT:BOOL=OFF',
     'SQLITECPP_INTERNAL_SQLITE:BOOL=ON',
     'SQLITECPP_USE_STATIC_RUNTIME:BOOL=OFF',
+    'SQLITE_ENABLE_COLUMN_METADATA:BOOL=OFF',
+    'SQLITE_ENABLE_JSON1:BOOL=OFF',
+    'SQLITE_OMIT_JSON:BOOL=ON',
     'SQLITECPP_USE_STACK_PROTECTION:BOOL=OFF',
     'BUILD_SHARED_LIBS:BOOL=OFF'
 ]
