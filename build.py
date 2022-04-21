@@ -44,6 +44,9 @@ IS_WINDOWS = 'Windows' == platform.system()
 IS_MSVC = 'VisualStudioVersion' in os.environ
 
 COMPILER_NAME = 'clang' if not IS_MSVC else 'msvc'
+if 'CC' in os.environ and os.environ['CC'] == 'gcc':
+    COMPILER_NAME = 'gnu'
+
 LINK_MODE_STRING = ['static', 'shared']
 BUILD_FILE_GENERATOR = '-GNinja'
 
