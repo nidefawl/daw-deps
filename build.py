@@ -84,7 +84,7 @@ def buildLibrary(libraryName, cmakeConfig, buildConfigs):
           if 0 != ret:
               raise Exception(f'subprocess call returned {ret}')
 
-      CMD_CMAKE_BUILD_AND_INSTALL = f'cmake --build "{BUILD_LOCATION}" --target install'
+      CMD_CMAKE_BUILD_AND_INSTALL = f'cmake --build "{BUILD_LOCATION}" --config {CMD_BUILD_CONFIG_TYPE} --target install'
       print(CMD_CMAKE_BUILD_AND_INSTALL)
       if not PRINT_CMDS_ONLY:
           ret = subprocess.call(CMD_CMAKE_BUILD_AND_INSTALL, stderr=subprocess.STDOUT, shell=True, env=execution_environ)
