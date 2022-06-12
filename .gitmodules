@@ -46,4 +46,4 @@
 	url = git@github.com:nidefawl/slowstacktrace.git
 [submodule "muparser"]
 	path = muparser
-	url = https://github.com/beltoforion/muparser
+	url = git@github.com:nidefawl/muparser.git
