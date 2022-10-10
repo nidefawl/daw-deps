@@ -47,3 +47,6 @@
 [submodule "muparser"]
 	path = muparser
 	url = git@github.com:nidefawl/muparser.git
+[submodule "libarchive"]
+	path = libarchive
+	url = https://github.com/libarchive/libarchive
