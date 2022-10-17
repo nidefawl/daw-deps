@@ -9,7 +9,8 @@ import subprocess
 import sys
 import platform
 
-OPTION_RELEASE_FLAGS_GCC_CLANG='-DNDEBUG -O3 -march=native -mtune=native -ffunction-sections -fdata-sections'
+OPTION_SANITIZE=None
+OPTION_RELEASE_FLAGS_GCC_CLANG='-DNDEBUG -O3 -march=x86-64-v3 -mtune=corei7 -ffunction-sections -fdata-sections'
 OPTION_RELEASE_FLAGS_MSVC=None
 
 script_path = os.path.dirname(os.path.abspath(__file__))
@@ -72,6 +73,13 @@ def buildLibrary(libraryName, cmakeConfig, buildConfigs):
           CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
           CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
           CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
+      if OPTION_SANITIZE is not None:
+        if IS_MSVC:
+            CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_DEBUG_INIT="/fsanitize={OPTION_SANITIZE}"'
+            CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_DEBUG_INIT="/fsanitize={OPTION_SANITIZE}"'
+        else:
+            CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_DEBUG="-fsanitize={OPTION_SANITIZE} -fno-omit-frame-pointer"'
+            CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_DEBUG="-fsanitize={OPTION_SANITIZE} -fno-omit-frame-pointer"'
       if cmakeConfig:
           CMD_CMAKE_CONFIGURE += f' {cmakeConfig}'
       if CMDLINE_EXTRA_ARGS:
