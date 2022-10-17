@@ -57,48 +57,51 @@ if COMPILER_NAME == 'msvc':
 execution_environ = os.environ
 
 
-def buildLibrary(libraryName, cmakeConfig, buildConfigs):
+def buildLibrary(libraryName, cmakeConfig, buildConfigs, appendPostfix=True):
+    if libraryName != 'libarchive' and libraryName != 'zlib':
+        return
     SRC_LOCATION = f'{PATH_DEPS_REPO}{os.path.sep}{libraryName}'
 
     for CMD_BUILD_CONFIG_TYPE in buildConfigs:
-      BUILD_LOCATION = os.path.join(PATH_DEPS_BUILD_DIR, CMD_BUILD_CONFIG_TYPE, libraryName)
-      INSTALL_LOCATION = os.path.join(PATH_DEPS_INSTALL_DIR)
-      CMD_CMAKE_CONFIGURE = f'cmake {BUILD_FILE_GENERATOR} -S"{SRC_LOCATION}" -B"{BUILD_LOCATION}" '
-      CMD_CMAKE_CONFIGURE += f' -DCMAKE_BUILD_TYPE={CMD_BUILD_CONFIG_TYPE}'
-      CMD_CMAKE_CONFIGURE += f' -DCMAKE_INSTALL_PREFIX:PATH="{INSTALL_LOCATION}"'
-      CMD_CMAKE_CONFIGURE += ' -DCMAKE_DEBUG_POSTFIX=_debug -DCMAKE_RELEASE_POSTFIX=_release'
-      CMD_CMAKE_REL_FLAGS = OPTION_RELEASE_FLAGS_MSVC if IS_MSVC else OPTION_RELEASE_FLAGS_GCC_CLANG
-      if CMD_CMAKE_REL_FLAGS is not None:
-          CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
-          CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
-          CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
-          CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
-      if OPTION_SANITIZE is not None:
-        if IS_MSVC:
-            CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_DEBUG_INIT="/fsanitize={OPTION_SANITIZE}"'
-            CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_DEBUG_INIT="/fsanitize={OPTION_SANITIZE}"'
-        else:
-            CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_DEBUG="-fsanitize={OPTION_SANITIZE} -fno-omit-frame-pointer"'
-            CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_DEBUG="-fsanitize={OPTION_SANITIZE} -fno-omit-frame-pointer"'
-      if cmakeConfig:
-          CMD_CMAKE_CONFIGURE += f' {cmakeConfig}'
-      if CMDLINE_EXTRA_ARGS:
-          CMD_CMAKE_CONFIGURE += f' {CMDLINE_EXTRA_ARGS}'
-      if CMDLINE_LOG_ARGS:
-          CMD_CMAKE_CONFIGURE += f' {CMDLINE_LOG_ARGS}'
-      print(CMD_CMAKE_CONFIGURE)
-      if not PRINT_CMDS_ONLY:
-          ret = subprocess.call(CMD_CMAKE_CONFIGURE, stderr=subprocess.STDOUT, shell=True, env=execution_environ)
-          if 0 != ret:
-              raise Exception(f'subprocess call returned {ret}')
+        BUILD_LOCATION = os.path.join(PATH_DEPS_BUILD_DIR, CMD_BUILD_CONFIG_TYPE, libraryName)
+        INSTALL_LOCATION = os.path.join(PATH_DEPS_INSTALL_DIR)
+        CMD_CMAKE_CONFIGURE = f'cmake {BUILD_FILE_GENERATOR} -S"{SRC_LOCATION}" -B"{BUILD_LOCATION}" '
+        CMD_CMAKE_CONFIGURE += f' -DCMAKE_BUILD_TYPE={CMD_BUILD_CONFIG_TYPE}'
+        CMD_CMAKE_CONFIGURE += f' -DCMAKE_INSTALL_PREFIX:PATH="{INSTALL_LOCATION}"'
+        if appendPostfix:
+            CMD_CMAKE_CONFIGURE += ' -DCMAKE_DEBUG_POSTFIX=_debug -DCMAKE_RELEASE_POSTFIX=_release'
+        CMD_CMAKE_REL_FLAGS = OPTION_RELEASE_FLAGS_MSVC if IS_MSVC else OPTION_RELEASE_FLAGS_GCC_CLANG
+        if CMD_CMAKE_REL_FLAGS is not None:
+            CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
+            CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELEASE_INIT="{CMD_CMAKE_REL_FLAGS}"'
+            CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
+            CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT="{CMD_CMAKE_REL_FLAGS}"'
+        if OPTION_SANITIZE is not None:
+            if IS_MSVC:
+                CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_DEBUG_INIT="/fsanitize={OPTION_SANITIZE}"'
+                CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_DEBUG_INIT="/fsanitize={OPTION_SANITIZE}"'
+            else:
+                CMD_CMAKE_CONFIGURE += f' -DCMAKE_C_FLAGS_DEBUG="-fsanitize={OPTION_SANITIZE} -fno-omit-frame-pointer"'
+                CMD_CMAKE_CONFIGURE += f' -DCMAKE_CXX_FLAGS_DEBUG="-fsanitize={OPTION_SANITIZE} -fno-omit-frame-pointer"'
+        if cmakeConfig:
+            CMD_CMAKE_CONFIGURE += f' {cmakeConfig}'
+        if CMDLINE_EXTRA_ARGS:
+            CMD_CMAKE_CONFIGURE += f' {CMDLINE_EXTRA_ARGS}'
+        if CMDLINE_LOG_ARGS:
+            CMD_CMAKE_CONFIGURE += f' {CMDLINE_LOG_ARGS}'
+        print(CMD_CMAKE_CONFIGURE)
+        if not PRINT_CMDS_ONLY:
+            ret = subprocess.call(CMD_CMAKE_CONFIGURE, stderr=subprocess.STDOUT, shell=True, env=execution_environ)
+            if 0 != ret:
+                raise Exception(f'subprocess call returned {ret}')
 
-      CMD_CMAKE_BUILD_AND_INSTALL = f'cmake --build "{BUILD_LOCATION}" --config {CMD_BUILD_CONFIG_TYPE} --target install'
-      print(CMD_CMAKE_BUILD_AND_INSTALL)
-      if not PRINT_CMDS_ONLY:
-          ret = subprocess.call(CMD_CMAKE_BUILD_AND_INSTALL, stderr=subprocess.STDOUT, shell=True, env=execution_environ)
-          if 0 != ret:
-              raise Exception(f'subprocess call returned {ret}')
-      print('\n')
+        CMD_CMAKE_BUILD_AND_INSTALL = f'cmake --build "{BUILD_LOCATION}" --config {CMD_BUILD_CONFIG_TYPE} --target install'
+        print(CMD_CMAKE_BUILD_AND_INSTALL)
+        if not PRINT_CMDS_ONLY:
+            ret = subprocess.call(CMD_CMAKE_BUILD_AND_INSTALL, stderr=subprocess.STDOUT, shell=True, env=execution_environ)
+            if 0 != ret:
+                raise Exception(f'subprocess call returned {ret}')
+        print('\n')
 
 
 GLFW_ARGS = [
@@ -175,6 +178,17 @@ BENCHMARK_ARGS = [
 
 buildLibrary('google-benchmark', ' -D'.join(BENCHMARK_ARGS), ['Release', 'Debug'])
 
+ZLIB_ARGS = [
+    'BUILD_SHARED_LIBS:BOOL=OFF',
+]
+buildLibrary('zlib', ' -D'.join(ZLIB_ARGS), ['Release'], appendPostfix=False)
+
+PATH_LIB_OUT = os.path.join(PATH_DEPS_INSTALL_DIR)
+for file in ['bin/libzlib.dll', 'lib/libzlib.dll.a']:
+    PATH_LIB_REMOVE = os.path.join(PATH_LIB_OUT, file)
+    if os.path.exists(PATH_LIB_REMOVE):
+        os.remove(PATH_LIB_REMOVE)
+
 LIBARCHIVE_ARGS = [
     '',
     'ENABLE_TEST=OFF',
@@ -207,7 +221,9 @@ LIBARCHIVE_ARGS = [
     'ENABLE_XATTR:BOOL=FALSE',
     'ENABLE_ZLIB:BOOL=TRUE',
     'ENABLE_ZSTD:BOOL=TRUE'
-    'BUILD_SHARED_LIBS:BOOL=OFF'
+    'BUILD_SHARED_LIBS:BOOL=OFF',
+    'ZLIB_USE_STATIC_LIBS:BOOL=ON', # This required CMake 3.24+
+    'ZLIB_ROOT:PATH=' + os.path.join(PATH_DEPS_INSTALL_DIR, 'Release'), # This picks the .dll when I want the static lib
 ]
 
 buildLibrary('libarchive', ' -D'.join(LIBARCHIVE_ARGS), ['Release', 'Debug'])
