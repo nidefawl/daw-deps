@@ -5,9 +5,9 @@ USAGE: python daw-deps/build.py [build-directory] [install-path]
 """
 
 import os
+import platform
 import subprocess
 import sys
-import platform
 
 OPTION_SANITIZE=None
 OPTION_RELEASE_FLAGS_GCC_CLANG='-DNDEBUG -O3 -march=x86-64-v3 -mtune=corei7 -ffunction-sections -fdata-sections'
