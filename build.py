@@ -58,8 +58,6 @@ execution_environ = os.environ
 
 
 def buildLibrary(libraryName, cmakeConfig, buildConfigs, appendPostfix=True):
-    if libraryName != 'libarchive' and libraryName != 'zlib':
-        return
     SRC_LOCATION = f'{PATH_DEPS_REPO}{os.path.sep}{libraryName}'
 
     for CMD_BUILD_CONFIG_TYPE in buildConfigs:
