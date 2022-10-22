@@ -221,7 +221,10 @@ LIBARCHIVE_ARGS = [
     'ENABLE_ZSTD:BOOL=TRUE'
     'BUILD_SHARED_LIBS:BOOL=OFF',
     'ZLIB_USE_STATIC_LIBS:BOOL=ON', # This required CMake 3.24+
-    'ZLIB_ROOT:PATH=' + os.path.join(PATH_DEPS_INSTALL_DIR, 'Release'), # This picks the .dll when I want the static lib
+    'ZLIB_ROOT:PATH=' + PATH_DEPS_INSTALL_DIR, # This picks the .dll when I want the static lib,
+    # These are required for cross-compiling
+    'ZLIB_WINAPI_EXITCODE=1', 
+    'ZLIB_WINAPI_EXITCODE__TRYRUN_OUTPUT=1'
 ]
 
 buildLibrary('libarchive', ' -D'.join(LIBARCHIVE_ARGS), ['Release', 'Debug'])
