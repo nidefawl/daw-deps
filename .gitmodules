@@ -53,3 +53,6 @@
 [submodule "zlib"]
 	path = zlib
 	url = https://github.com/madler/zlib
+[submodule "clap"]
+	path = clap
+	url = https://github.com/free-audio/clap
