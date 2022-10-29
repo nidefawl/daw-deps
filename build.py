@@ -107,7 +107,7 @@ GLFW_ARGS = [
     'GLFW_BUILD_DOCS:BOOL=OFF',
     'GLFW_BUILD_TESTS:BOOL=OFF',
     'GLFW_BUILD_EXAMPLES:BOOL=OFF',
-    'BUILD_SHARED_LIBS:BOOL=OFF'
+    'BUILD_SHARED_LIBS:BOOL=OFF',
 ]
 buildLibrary("glfw", ' -D'.join(GLFW_ARGS), ['Release', 'Debug'])
 
@@ -121,7 +121,7 @@ SQLITECPP_ARGS = [
     'SQLITE_ENABLE_JSON1:BOOL=OFF',
     'SQLITE_OMIT_JSON:BOOL=ON',
     'SQLITECPP_USE_STACK_PROTECTION:BOOL=OFF',
-    'BUILD_SHARED_LIBS:BOOL=OFF'
+    'BUILD_SHARED_LIBS:BOOL=OFF',
 ]
 buildLibrary("SQLiteCpp", ' -D'.join(SQLITECPP_ARGS), ['Release', 'Debug'])
 
@@ -134,7 +134,7 @@ SOXR_ARGS = [
     'BUILD_SHARED_RUNTIME:BOOL=ON',
     'BUILD_SHARED_LIBS:BOOL=ON',
     f'CMAKE_RELEASE_POSTFIX="-{COMPILER_NAME}-release"',
-    f'CMAKE_DEBUG_POSTFIX="-{COMPILER_NAME}-debug"'
+    f'CMAKE_DEBUG_POSTFIX="-{COMPILER_NAME}-debug"',
 ]
 buildLibrary("soxr", ' -D'.join(SOXR_ARGS), ['Release'])
 
@@ -142,7 +142,7 @@ PORTAUDIO_ARGS = [
     '',
     'PA_DLL_LINK_WITH_STATIC_RUNTIME:BOOL=OFF',
     'PA_ENABLE_DEBUG_OUTPUT:BOOL=OFF',
-    'BUILD_SHARED_LIBS:BOOL=OFF'
+    'BUILD_SHARED_LIBS:BOOL=OFF',
 ]
 if platform.system() == "Windows":
     PORTAUDIO_ARGS.append('PA_USE_ASIO:BOOL=ON')
@@ -162,7 +162,7 @@ KISSFFT_ARGS = [
     'KISSFFT_USE_ALLOCA=OFF',
     'KISSFFT_PKGCONFIG=OFF',
     'KISSFFT_STATIC=ON',
-    'BUILD_SHARED_LIBS:BOOL=OFF'
+    'BUILD_SHARED_LIBS:BOOL=OFF',
 ]
 
 buildLibrary('kissfft', ' -D'.join(KISSFFT_ARGS), ['Release', 'Debug'])
@@ -171,27 +171,33 @@ BENCHMARK_ARGS = [
     '',
     'BENCHMARK_ENABLE_TESTING=OFF',
     'BENCHMARK_INSTALL_DOCS=OFF',
-    'BUILD_SHARED_LIBS:BOOL=OFF'
+    'BUILD_SHARED_LIBS:BOOL=OFF',
 ]
 
 buildLibrary('google-benchmark', ' -D'.join(BENCHMARK_ARGS), ['Release', 'Debug'])
 
+# Note about libarchive + libz:
+# libarchive cannot be built static-only (no switch provided)
+# That means we need to provide a dynamic libz version for it to build successfully.
+# On windows the dynamic libz is not needed, so we can just build it static-only.
+
 ZLIB_ARGS = [
-    'BUILD_SHARED_LIBS:BOOL=OFF',
+    'BUILD_SHARED_LIBS:BOOL=' + ('OFF' if IS_WINDOWS else 'ON'),
 ]
 buildLibrary('zlib', ' -D'.join(ZLIB_ARGS), ['Release'], appendPostfix=False)
 
-PATH_LIB_OUT = os.path.join(PATH_DEPS_INSTALL_DIR)
-for file in ['bin/libzlib.dll', 'lib/libzlib.dll.a']:
-    PATH_LIB_REMOVE = os.path.join(PATH_LIB_OUT, file)
-    if os.path.exists(PATH_LIB_REMOVE):
-        os.remove(PATH_LIB_REMOVE)
+if IS_WINDOWS:
+    # We do want to use the static libz version for libarchive on windows
+    PATH_LIB_OUT = os.path.join(PATH_DEPS_INSTALL_DIR)
+    for file in ['bin/libzlib.dll', 'lib/libzlib.dll.a']:
+        PATH_LIB_REMOVE = os.path.join(PATH_LIB_OUT, file)
+        if os.path.exists(PATH_LIB_REMOVE):
+            os.remove(PATH_LIB_REMOVE)
 
 LIBARCHIVE_ARGS = [
-    '',
     'ENABLE_TEST=OFF',
     'ENABLE_ACL:BOOL=FALSE',
-    'ENABLE_BZip2:BOOL=TRUE',
+    'ENABLE_BZip2:BOOL=FALSE',
     'ENABLE_CAT:BOOL=FALSE',
     'ENABLE_CAT_SHARED:BOOL=FALSE',
     'ENABLE_CNG:BOOL=FALSE',
@@ -212,19 +218,19 @@ LIBARCHIVE_ARGS = [
     'ENABLE_OPENSSL:BOOL=FALSE',
     'ENABLE_PCREPOSIX:BOOL=FALSE',
     'ENABLE_SAFESEH:STRING=AUTO',
-    'ENABLE_TAR:BOOL=TRUE',
+    'ENABLE_TAR:BOOL=FALSE',
     'ENABLE_TAR_SHARED:BOOL=FALSE',
     'ENABLE_TEST:BOOL=OFF',
     'ENABLE_WERROR:BOOL=FALSE',
     'ENABLE_XATTR:BOOL=FALSE',
     'ENABLE_ZLIB:BOOL=TRUE',
-    'ENABLE_ZSTD:BOOL=TRUE'
+    'ENABLE_ZSTD:BOOL=FALSE',
     'BUILD_SHARED_LIBS:BOOL=OFF',
-    'ZLIB_USE_STATIC_LIBS:BOOL=ON', # This required CMake 3.24+
+    'ZLIB_USE_STATIC_LIBS:BOOL=' + ('OFF' if IS_WINDOWS else 'ON'), 
     'ZLIB_ROOT:PATH=' + PATH_DEPS_INSTALL_DIR, # This picks the .dll when I want the static lib,
     # These are required for cross-compiling
     'ZLIB_WINAPI_EXITCODE=1', 
-    'ZLIB_WINAPI_EXITCODE__TRYRUN_OUTPUT=1'
+    'ZLIB_WINAPI_EXITCODE__TRYRUN_OUTPUT=1',
 ]
 
 buildLibrary('libarchive', ' -D'.join(LIBARCHIVE_ARGS), ['Release', 'Debug'])
