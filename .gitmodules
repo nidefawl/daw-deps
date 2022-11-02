@@ -59,3 +59,9 @@
 [submodule "clap-helpers"]
 	path = clap-helpers
 	url = https://github.com/free-audio/clap-helpers
+[submodule "dr_libs"]
+	path = dr_libs
+	url = https://github.com/mackron/dr_libs
+[submodule "dr_libs/dr_libs"]
+	path = dr_libs/dr_libs
+	url = https://github.com/mackron/dr_libs
