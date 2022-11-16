@@ -22,6 +22,18 @@ if len(sysargs) > 1 and sysargs[1][0:1] == '-':
 elif len(sysargs) < 3:
     sysargs = [__file__, './build', './install']
 
+build_types = []
+for arg in sysargs[3:]:
+    if '-debug' in arg:
+        build_types.append('Debug')
+        sysargs.remove(arg)
+    if '-release' in arg:
+        build_types.append('Release')
+        sysargs.remove(arg)
+
+if len(build_types) == 0:
+    build_types = ['Debug', 'Release']
+
 CMDLINE_LOG_ARGS = ' --log-level=WARNING -Wno-dev '
 CMDLINE_LOG_ARGS = ''
 
@@ -109,7 +121,7 @@ GLFW_ARGS = [
     'GLFW_BUILD_EXAMPLES:BOOL=OFF',
     'BUILD_SHARED_LIBS:BOOL=OFF',
 ]
-buildLibrary("glfw", ' -D'.join(GLFW_ARGS), ['Release', 'Debug'])
+buildLibrary("glfw", ' -D'.join(GLFW_ARGS), build_types)
 
 SQLITECPP_ARGS = [
     '',
@@ -123,7 +135,7 @@ SQLITECPP_ARGS = [
     'SQLITECPP_USE_STACK_PROTECTION:BOOL=OFF',
     'BUILD_SHARED_LIBS:BOOL=OFF',
 ]
-buildLibrary("SQLiteCpp", ' -D'.join(SQLITECPP_ARGS), ['Release', 'Debug'])
+buildLibrary("SQLiteCpp", ' -D'.join(SQLITECPP_ARGS), build_types)
 
 SOXR_ARGS = [
     '',
@@ -147,9 +159,9 @@ PORTAUDIO_ARGS = [
 if platform.system() == "Windows":
     PORTAUDIO_ARGS.append('PA_USE_ASIO:BOOL=ON')
 
-buildLibrary('portaudio', ' -D'.join(PORTAUDIO_ARGS), ['Release', 'Debug'])
+buildLibrary('portaudio', ' -D'.join(PORTAUDIO_ARGS), build_types)
 
-buildLibrary('portmidi', ' -DBUILD_SHARED_LIBS:BOOL=OFF -DPM_USE_STATIC_RUNTIME=OFF -DPM_CHECK_ERRORS=OFF', ['Release', 'Debug'])
+buildLibrary('portmidi', ' -DBUILD_SHARED_LIBS:BOOL=OFF -DPM_USE_STATIC_RUNTIME=OFF -DPM_CHECK_ERRORS=OFF', build_types)
 
 buildLibrary('pybind11', ' -DBUILD_SHARED_LIBS:BOOL=OFF -DPYBIND11_TEST:BOOL=OFF -DPYBIND11_INSTALL:BOOL=On', ['Release'])
 
@@ -165,7 +177,7 @@ KISSFFT_ARGS = [
     'BUILD_SHARED_LIBS:BOOL=OFF',
 ]
 
-buildLibrary('kissfft', ' -D'.join(KISSFFT_ARGS), ['Release', 'Debug'])
+buildLibrary('kissfft', ' -D'.join(KISSFFT_ARGS), build_types)
 
 BENCHMARK_ARGS = [
     '',
@@ -174,7 +186,7 @@ BENCHMARK_ARGS = [
     'BUILD_SHARED_LIBS:BOOL=OFF',
 ]
 
-buildLibrary('google-benchmark', ' -D'.join(BENCHMARK_ARGS), ['Release', 'Debug'])
+buildLibrary('google-benchmark', ' -D'.join(BENCHMARK_ARGS), build_types)
 
 # Note about libarchive + libz:
 # libarchive cannot be built static-only (no switch provided)
@@ -184,4 +196,4 @@ buildLibrary('google-benchmark', ' -D'.join(BENCHMARK_ARGS), ['Release', 'Debug'
 ZLIB_ARGS = [
     'BUILD_SHARED_LIBS:BOOL=' + ('OFF' if IS_WINDOWS else 'ON'),
 ]
-buildLibrary('zlib', ' -D'.join(ZLIB_ARGS), ['Release', 'Debug'], appendPostfix=True)
+buildLibrary('zlib', ' -D'.join(ZLIB_ARGS), build_types, appendPostfix=True)
