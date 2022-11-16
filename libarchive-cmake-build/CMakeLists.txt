@@ -66,8 +66,8 @@ SET(libarchive_SOURCES
   # archive_ppmd7.c
   # archive_ppmd7_private.h
   archive_private.h
-  archive_random.c
-  archive_random_private.h
+  # archive_random.c
+  # archive_random_private.h
   archive_rb.c
   archive_rb.h
   archive_read.c
@@ -203,7 +203,8 @@ ENDIF()
 
 list(TRANSFORM include_HEADERS PREPEND "${LIBARCHIVE_SRC_PATH}/")
 list(TRANSFORM libarchive_SOURCES PREPEND "${LIBARCHIVE_SRC_PATH}/")
-list(APPEND libarchive_SOURCES 
+list(APPEND libarchive_SOURCES
+archive_dummy.c
 archive_read_support_filter_all.c
 archive_read_support_format_all.c
 archive_write_add_filter.c
