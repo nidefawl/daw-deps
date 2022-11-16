@@ -3,9 +3,7 @@ set(LIB_NAME "libarchive")
 project(${LIB_NAME} C)
 
 find_library(ZLIB_RELEASE PATHS ${PROJECT_DEPS_INSTALL_PATH} REQUIRED NO_DEFAULT_PATH NAMES "zlibstatic_release" "zlib_release" "zlib_release.dll" PATH_SUFFIXES lib)
-find_library(ZLIB_DEBUG PATHS ${PROJECT_DEPS_INSTALL_PATH} REQUIRED NO_DEFAULT_PATH NAMES "zlibstaticd" "zlibstatic_debug" "zlibd" "zlib_debug.dll" PATH_SUFFIXES lib)
-message(STATUS "ZLIB_RELEASE ${ZLIB_RELEASE}")
-message(STATUS "ZLIB_DEBUG ${ZLIB_DEBUG}")
+find_library(ZLIB_DEBUG PATHS ${PROJECT_DEPS_INSTALL_PATH} NO_DEFAULT_PATH NAMES "zlibstaticd" "zlibstatic_debug" "zlibd" "zlib_debug.dll" PATH_SUFFIXES lib)
 
 find_path(LIBARCHIVE_SRC_PATH
 NAMES "archive_read.c"
@@ -218,7 +216,14 @@ set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER "${include_HEADERS}")
 target_include_directories(${LIB_NAME} PRIVATE ${PROJECT_DEPS_INSTALL_PATH}/include)
 target_include_directories(${LIB_NAME} PUBLIC  ${LIBARCHIVE_SRC_PATH})
 
-target_link_libraries(${LIB_NAME} PUBLIC optimized ${ZLIB_RELEASE} debug ${ZLIB_DEBUG})
+if (ZLIB_DEBUG AND ZLIB_RELEASE)
+  target_link_libraries(${LIB_NAME} PUBLIC optimized ${ZLIB_RELEASE} debug ${ZLIB_DEBUG})
+elseif(ZLIB_RELEASE)
+  target_link_libraries(${LIB_NAME} PUBLIC ${ZLIB_RELEASE})
+else(ZLIB_DEBUG)
+  target_link_libraries(${LIB_NAME} PUBLIC ${ZLIB_DEBUG})
+endif()
+
 set(CONFIG_FILE "config.h")
 if (CLANG AND WIN32)
   set(CONFIG_FILE "config-win-clang.h")
