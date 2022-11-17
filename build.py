@@ -35,7 +35,7 @@ if len(build_types) == 0:
     build_types = ['Debug', 'Release']
 
 CMDLINE_LOG_ARGS = ' --log-level=WARNING -Wno-dev '
-CMDLINE_LOG_ARGS = ''
+# CMDLINE_LOG_ARGS = ''
 
 CMDLINE_EXTRA_ARGS = None
 if len(sysargs) > 3:
