@@ -1,10 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
-
-project(zlib C)
-
-set(VERSION "1.2.13")
-
+project(zlib LANGUAGES C VERSION 1.2.13)
 include(CheckTypeSize)
 include(CheckFunctionExists)
 include(CheckIncludeFile)
@@ -110,14 +105,12 @@ list(TRANSFORM ZLIB_PRIVATE_HDRS PREPEND "${ZLIB_SRC_DIR}/")
 list(TRANSFORM ZLIB_SRCS PREPEND "${ZLIB_SRC_DIR}/")
 list(APPEND ZLIB_PUBLIC_HDRS ${CMAKE_CURRENT_BINARY_DIR}/zconf.h)
 
-# parse the full version number from zlib.h and include in ZLIB_FULL_VERSION
-file(READ ${ZLIB_SRC_DIR}/zlib.h _zlib_h_contents)
-string(REGEX REPLACE ".*#define[ \t]+ZLIB_VERSION[ \t]+\"([-0-9A-Za-z.]+)\".*"
-"\\1" ZLIB_FULL_VERSION ${_zlib_h_contents})
-
 add_library(zlib STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-set_target_properties(zlib PROPERTIES PUBLIC_HEADER "${ZLIB_PUBLIC_HDRS}")
-
+set_target_properties(zlib PROPERTIES
+    UNITY_BUILD OFF
+    POSITION_INDEPENDENT_CODE ON
+    PUBLIC_HEADER "${ZLIB_PUBLIC_HDRS}"
+)
 target_include_directories(zlib PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${ZLIB_SRC_DIR})
 if(MSVC)
     target_compile_definitions(zlib PRIVATE -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
@@ -130,5 +123,3 @@ endif()
 if(NOT HAVE_FSEEKO)
     target_compile_definitions(zlib PRIVATE -DNO_FSEEKO)
 endif()
-
-set_target_properties(zlib PROPERTIES POSITION_INDEPENDENT_CODE ON)

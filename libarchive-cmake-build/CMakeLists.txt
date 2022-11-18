@@ -209,10 +209,13 @@ archive_write_add_filter.c
 archive_write_set_format.c
 )
 add_library(${LIB_NAME})
-set_target_properties(${LIB_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_sources(${LIB_NAME} PRIVATE ${libarchive_SOURCES})
 target_sources(${LIB_NAME} PUBLIC ${include_HEADERS})
-set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER "${include_HEADERS}")
+set_target_properties(${LIB_NAME} PROPERTIES
+    UNITY_BUILD OFF
+    POSITION_INDEPENDENT_CODE ON
+    PUBLIC_HEADER "${include_HEADERS}"
+)
 #target_include_directories(${LIB_NAME} PRIVATE ${LIBARCHIVE_SRC_PATH})
 target_include_directories(${LIB_NAME} PRIVATE ${PROJECT_DEPS_INSTALL_PATH}/include)
 target_include_directories(${LIB_NAME} PUBLIC  ${LIBARCHIVE_SRC_PATH})
