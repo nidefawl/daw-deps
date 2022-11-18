@@ -199,8 +199,12 @@ ELSEIF(ARCHIVE_ACL_SUNOS)
   LIST(APPEND libarchive_SOURCES archive_disk_acl_sunos.c)
 ENDIF()
 
-list(TRANSFORM include_HEADERS PREPEND "${LIBARCHIVE_SRC_PATH}/")
+# copy list include_HEADERS
+SET(HDR_FILES_ABS ${include_HEADERS})
+list(TRANSFORM HDR_FILES_ABS PREPEND "${LIBARCHIVE_SRC_PATH}/")
 list(TRANSFORM libarchive_SOURCES PREPEND "${LIBARCHIVE_SRC_PATH}/")
+file(COPY ${HDR_FILES_ABS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/dist/)
+list(TRANSFORM include_HEADERS PREPEND ${CMAKE_CURRENT_BINARY_DIR}/dist/)
 list(APPEND libarchive_SOURCES
 archive_dummy.c
 archive_read_support_filter_all.c
@@ -216,9 +220,9 @@ set_target_properties(${LIB_NAME} PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     PUBLIC_HEADER "${include_HEADERS}"
 )
-#target_include_directories(${LIB_NAME} PRIVATE ${LIBARCHIVE_SRC_PATH})
-target_include_directories(${LIB_NAME} PRIVATE ${PROJECT_DEPS_INSTALL_PATH}/include)
-target_include_directories(${LIB_NAME} PUBLIC  ${LIBARCHIVE_SRC_PATH})
+
+target_include_directories(${LIB_NAME} PRIVATE ${LIBARCHIVE_SRC_PATH})
+target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/dist/)
 target_link_libraries(${LIB_NAME} INTERFACE zlib)
 
 set(CONFIG_FILE "config.h")
@@ -236,11 +240,4 @@ if (CLANG AND LINUX)
 endif()
 
 target_compile_definitions(${LIB_NAME} PUBLIC LIBARCHIVE_STATIC PLATFORM_CONFIG_H="${CMAKE_CURRENT_LIST_DIR}/${CONFIG_FILE}")
-set_source_files_properties(${libarchive_SOURCES} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
-include(GNUInstallDirs)
-install(TARGETS ${LIB_NAME}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        )
+

@@ -57,20 +57,16 @@ if(NOT ZLIB_SRC_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
   endif()
 endif()
 
-set(ZLIB_PC ${CMAKE_CURRENT_BINARY_DIR}/zlib.pc)
-configure_file( ${ZLIB_SRC_DIR}/zlib.pc.cmakein
-		${ZLIB_PC} @ONLY)
 configure_file(	${ZLIB_SRC_DIR}/zconf.h.cmakein
-		${CMAKE_CURRENT_BINARY_DIR}/zconf.h @ONLY)
-
+		${CMAKE_CURRENT_BINARY_DIR}/dist/zconf.h @ONLY)
+# copy zlib.h to dist/
+configure_file(	${ZLIB_SRC_DIR}/zlib.h
+        ${CMAKE_CURRENT_BINARY_DIR}/dist/zlib.h COPYONLY)
 
 #============================================================================
 # zlib
 #============================================================================
 
-set(ZLIB_PUBLIC_HDRS
-    zlib.h
-)
 set(ZLIB_PRIVATE_HDRS
     crc32.h
     deflate.h
@@ -103,7 +99,10 @@ set(ZLIB_SRCS
 list(TRANSFORM ZLIB_PUBLIC_HDRS PREPEND "${ZLIB_SRC_DIR}/")
 list(TRANSFORM ZLIB_PRIVATE_HDRS PREPEND "${ZLIB_SRC_DIR}/")
 list(TRANSFORM ZLIB_SRCS PREPEND "${ZLIB_SRC_DIR}/")
-list(APPEND ZLIB_PUBLIC_HDRS ${CMAKE_CURRENT_BINARY_DIR}/zconf.h)
+set(ZLIB_PUBLIC_HDRS
+    ${CMAKE_CURRENT_BINARY_DIR}/dist/zconf.h
+    ${CMAKE_CURRENT_BINARY_DIR}/dist/zlib.h
+)
 
 add_library(zlib STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
 set_target_properties(zlib PROPERTIES
@@ -111,7 +110,8 @@ set_target_properties(zlib PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     PUBLIC_HEADER "${ZLIB_PUBLIC_HDRS}"
 )
-target_include_directories(zlib PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${ZLIB_SRC_DIR})
+target_include_directories(zlib PRIVATE ${ZLIB_SRC_DIR})
+target_include_directories(zlib PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/dist)
 if(MSVC)
     target_compile_definitions(zlib PRIVATE -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 endif()
