@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 set(LIB_NAME "libarchive")
 project(${LIB_NAME} C)
 
-find_library(ZLIB_RELEASE PATHS ${PROJECT_DEPS_INSTALL_PATH} REQUIRED NO_DEFAULT_PATH NAMES "zlibstatic_release" "zlib_release" "zlib_release.dll" PATH_SUFFIXES lib)
-find_library(ZLIB_DEBUG PATHS ${PROJECT_DEPS_INSTALL_PATH} NO_DEFAULT_PATH NAMES "zlibstaticd" "zlibstatic_debug" "zlibd" "zlib_debug.dll" PATH_SUFFIXES lib)
+find_library(ZLIB_RELEASE PATHS ${PROJECT_DEPS_INSTALL_PATH} REQUIRED NO_DEFAULT_PATH NAMES "libz_release.a" "zlibstatic_release" "z_release" "zlib_release" "zlib_release.dll" PATH_SUFFIXES lib)
+find_library(ZLIB_DEBUG PATHS ${PROJECT_DEPS_INSTALL_PATH} REQUIRED NO_DEFAULT_PATH NAMES "libz_debug.a" "zlibstaticd" "z_debug" "zlibstatic_debug" "zlibd" "zlib_debug.dll" PATH_SUFFIXES lib)
 
 find_path(LIBARCHIVE_SRC_PATH
 NAMES "archive_read.c"
