@@ -118,8 +118,8 @@ string(REGEX REPLACE ".*#define[ \t]+ZLIB_VERSION[ \t]+\"([-0-9A-Za-z.]+)\".*"
 add_library(zlib STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
 set_target_properties(zlib PROPERTIES PUBLIC_HEADER "${ZLIB_PUBLIC_HDRS}")
 
+target_include_directories(zlib PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${ZLIB_SRC_DIR})
 if(MSVC)
-    target_include_directories(zlib PRIVATE ${ZLIB_SRC_DIR})
     target_compile_definitions(zlib PRIVATE -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 endif()
 
