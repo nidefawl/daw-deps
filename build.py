@@ -187,14 +187,3 @@ BENCHMARK_ARGS = [
 ]
 
 buildLibrary('google-benchmark', ' -D'.join(BENCHMARK_ARGS), build_types)
-
-# Note about libarchive + libz:
-# libarchive cannot be built static-only (no switch provided)
-# That means we need to provide a dynamic libz version for it to build successfully.
-# On windows the dynamic libz is not needed, so we can just build it static-only.
-
-ZLIB_ARGS = [
-    '',
-    'BUILD_SHARED_LIBS:BOOL=OFF',
-]
-buildLibrary('zlib', ' -D'.join(ZLIB_ARGS), build_types, appendPostfix=True)
