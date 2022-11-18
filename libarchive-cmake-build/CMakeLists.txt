@@ -212,7 +212,7 @@ archive_read_support_format_all.c
 archive_write_add_filter.c
 archive_write_set_format.c
 )
-add_library(${LIB_NAME})
+add_library(${LIB_NAME} STATIC)
 target_sources(${LIB_NAME} PRIVATE ${libarchive_SOURCES})
 target_sources(${LIB_NAME} PUBLIC ${include_HEADERS})
 set_target_properties(${LIB_NAME} PROPERTIES
@@ -223,7 +223,7 @@ set_target_properties(${LIB_NAME} PROPERTIES
 
 target_include_directories(${LIB_NAME} PRIVATE ${LIBARCHIVE_SRC_PATH})
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/dist/)
-target_link_libraries(${LIB_NAME} INTERFACE zlib)
+target_link_libraries(${LIB_NAME} PUBLIC zlib)
 
 set(CONFIG_FILE "config.h")
 if (CLANG AND WIN32)

@@ -104,7 +104,9 @@ set(ZLIB_PUBLIC_HDRS
     ${CMAKE_CURRENT_BINARY_DIR}/dist/zlib.h
 )
 
-add_library(zlib STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
+add_library(zlib STATIC)
+target_sources(zlib PRIVATE ${ZLIB_SRCS} ${ZLIB_PRIVATE_HDRS})
+target_sources(zlib PUBLIC ${ZLIB_PUBLIC_HDRS})
 set_target_properties(zlib PROPERTIES
     UNITY_BUILD OFF
     POSITION_INDEPENDENT_CODE ON
