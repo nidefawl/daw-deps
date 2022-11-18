@@ -43,10 +43,10 @@
 	shallow = true
 [submodule "slowstacktrace"]
 	path = slowstacktrace
-	url = git@github.com:nidefawl/slowstacktrace.git
+	url = https://github.com/nidefawl/slowstacktrace.git
 [submodule "muparser"]
 	path = muparser
-	url = git@github.com:nidefawl/muparser.git
+	url = https://github.com/nidefawl/muparser.git
 [submodule "libarchive"]
 	path = libarchive
 	url = https://github.com/libarchive/libarchive
