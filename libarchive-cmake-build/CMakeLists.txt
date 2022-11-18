@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.20)
 set(LIB_NAME "libarchive")
 project(${LIB_NAME} C)
 
-find_library(ZLIB_RELEASE PATHS ${PROJECT_DEPS_INSTALL_PATH} NO_DEFAULT_PATH NAMES "libz_release.a" "zlibstatic_release" "z_release" "zlib_release" "zlib_release.dll" PATH_SUFFIXES lib)
-find_library(ZLIB_DEBUG PATHS ${PROJECT_DEPS_INSTALL_PATH} NO_DEFAULT_PATH NAMES "libz_debug.a" "zlibstaticd" "z_debug" "zlibstatic_debug" "zlibd" "zlib_debug.dll" PATH_SUFFIXES lib)
-
+# if (NOT zlib)
+#   message(FATAL_ERROR "zlib not found")
+# endif()
 find_path(LIBARCHIVE_SRC_PATH
 NAMES "archive_read.c"
 PATHS 
@@ -209,20 +209,14 @@ archive_write_add_filter.c
 archive_write_set_format.c
 )
 add_library(${LIB_NAME})
+set_target_properties(${LIB_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_sources(${LIB_NAME} PRIVATE ${libarchive_SOURCES})
 target_sources(${LIB_NAME} PUBLIC ${include_HEADERS})
 set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER "${include_HEADERS}")
 #target_include_directories(${LIB_NAME} PRIVATE ${LIBARCHIVE_SRC_PATH})
 target_include_directories(${LIB_NAME} PRIVATE ${PROJECT_DEPS_INSTALL_PATH}/include)
 target_include_directories(${LIB_NAME} PUBLIC  ${LIBARCHIVE_SRC_PATH})
-
-if (ZLIB_DEBUG AND ZLIB_RELEASE)
-  target_link_libraries(${LIB_NAME} PUBLIC optimized ${ZLIB_RELEASE} debug ${ZLIB_DEBUG})
-elseif(ZLIB_RELEASE)
-  target_link_libraries(${LIB_NAME} PUBLIC ${ZLIB_RELEASE})
-else(ZLIB_DEBUG)
-  target_link_libraries(${LIB_NAME} PUBLIC ${ZLIB_DEBUG})
-endif()
+target_link_libraries(${LIB_NAME} INTERFACE zlib)
 
 set(CONFIG_FILE "config.h")
 if (CLANG AND WIN32)
@@ -238,7 +232,7 @@ if (CLANG AND LINUX)
   set(CONFIG_FILE "config-linux-clang.h")
 endif()
 
-target_compile_definitions(${LIB_NAME} PUBLIC LIBARCHIVE_STATIC PLATFORM_CONFIG_H="${CMAKE_CURRENT_LIST_DIR}/${CONFIG_FILE}" FUNNY=2)
+target_compile_definitions(${LIB_NAME} PUBLIC LIBARCHIVE_STATIC PLATFORM_CONFIG_H="${CMAKE_CURRENT_LIST_DIR}/${CONFIG_FILE}")
 set_source_files_properties(${libarchive_SOURCES} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 include(GNUInstallDirs)
 install(TARGETS ${LIB_NAME}
