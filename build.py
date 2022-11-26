@@ -9,7 +9,7 @@ import platform
 import subprocess
 import sys
 
-OPTION_SANITIZE=None
+OPTION_SANITIZE=''
 OPTION_RELEASE_FLAGS_GCC_CLANG='-DNDEBUG -O3 -march=x86-64-v3 -mtune=corei7 -ffunction-sections -fdata-sections'
 OPTION_RELEASE_FLAGS_MSVC=None
 
@@ -29,6 +29,9 @@ for arg in sysargs[3:]:
         sysargs.remove(arg)
     if '-release' in arg:
         build_types.append('Release')
+        sysargs.remove(arg)
+    if '-fsanitize' in arg:
+        OPTION_SANITIZE = arg.split('=')[1]
         sysargs.remove(arg)
 
 if len(build_types) == 0:
