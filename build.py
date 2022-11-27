@@ -9,7 +9,7 @@ import platform
 import subprocess
 import sys
 
-OPTION_SANITIZE=''
+OPTION_SANITIZE=None
 OPTION_RELEASE_FLAGS_GCC_CLANG='-DNDEBUG -O3 -march=x86-64-v3 -mtune=corei7 -ffunction-sections -fdata-sections'
 OPTION_RELEASE_FLAGS_MSVC=None
 
