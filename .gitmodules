@@ -1,6 +1,6 @@
 [submodule "tinyspline"] 
-  path = tinyspline 
-  url = https://github.com/msteinbeck/tinyspline.git
+	path = tinyspline
+	url = https://github.com/msteinbeck/tinyspline.git
 [submodule "SQLiteCpp"]
 	path = SQLiteCpp
 	url = https://github.com/nidefawl/SQLiteCpp.git
