@@ -157,10 +157,9 @@ PORTAUDIO_ARGS = [
     '',
     'PA_DLL_LINK_WITH_STATIC_RUNTIME:BOOL=OFF',
     'PA_ENABLE_DEBUG_OUTPUT:BOOL=OFF',
+    'PA_USE_ASIO:BOOL=ON',
     'BUILD_SHARED_LIBS:BOOL=OFF',
 ]
-if platform.system() == "Windows":
-    PORTAUDIO_ARGS.append('PA_USE_ASIO:BOOL=ON')
 
 buildLibrary('portaudio', ' -D'.join(PORTAUDIO_ARGS), build_types)
 
