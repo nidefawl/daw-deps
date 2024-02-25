@@ -7,7 +7,7 @@
 	shallow = true
 [submodule "portaudio"]
 	path = portaudio
-	url = https://github.com/PortAudio/portaudio.git
+	url = https://github.com/nidefawl/portaudio
 	shallow = true
 [submodule "portmidi"]
 	path = portmidi
