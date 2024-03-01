@@ -65,3 +65,6 @@
 [submodule "dr_libs/dr_libs"]
 	path = dr_libs/dr_libs
 	url = https://github.com/mackron/dr_libs
+[submodule "signalsmith-stretch"]
+	path = signalsmith-stretch
+	url = https://github.com/Signalsmith-Audio/signalsmith-stretch.git
