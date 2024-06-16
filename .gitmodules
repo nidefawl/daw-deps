@@ -64,7 +64,7 @@
 	url = https://github.com/mackron/dr_libs
 [submodule "dr_libs/dr_libs"]
 	path = dr_libs/dr_libs
-	url = https://github.com/mackron/dr_libs
+	url = https://github.com/nidefawl/dr_libs.git
 [submodule "signalsmith-stretch"]
 	path = signalsmith-stretch
 	url = https://github.com/nidefawl/signalsmith-stretch.git
