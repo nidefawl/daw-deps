@@ -190,3 +190,12 @@ BENCHMARK_ARGS = [
 ]
 
 buildLibrary('google-benchmark', ' -D'.join(BENCHMARK_ARGS), build_types)
+
+NLOHMANN_JSON_ARGS = [
+    '',
+    'JSON_BuildTests=OFF',
+    'JSON_Install=ON',
+    'JSON_MultipleHeaders=ON',
+]
+
+buildLibrary('nlohmann-json', ' -D'.join(NLOHMANN_JSON_ARGS), build_types)
